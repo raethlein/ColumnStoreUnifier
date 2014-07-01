@@ -1,8 +1,8 @@
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import model.Attribute;
 import model.Filter;
 import model.Key;
 import model.Row;
@@ -21,7 +21,7 @@ public class DynamoDbTest {
 	}
 
 	@Test
-	public void getItemTest() {
+	public void getRowByKeyTest() {
 		TestHandler.deleteTestTables();
 		TestHandler.createTestTables();
 		TestHandler.insertTestItems(TestHandler.TABLE_NAME);
@@ -74,35 +74,28 @@ public class DynamoDbTest {
 		TestHandler.createTestTables();
 		TestHandler.insertTestItems(TestHandler.TABLE_NAME);
 		
-		ArrayList<Filter> filters = new ArrayList<>();
-		Filter filter = new Filter("age", "GE", "24");
-		filters.add(filter);
-		filter = new Filter("type", "EQ", "princess");
-		filters.add(filter);
+		Filter[] filters = {new Filter(new Attribute("age", "24"), "GE")};
 		
-		List<Row> items = TestHandler.queryHandler.getRows(TestHandler.TABLE_NAME, "OR", filters);
+		List<Row> rows = TestHandler.queryHandler.getRows(TestHandler.TABLE_NAME, "OR", filters);
 		
-		assertEquals(3, items.size());
-		assertEquals("Daisy", items.get(0).getAttributesMap().get("name").getValue());
-		assertEquals("Peach", items.get(1).getAttributesMap().get("name").getValue());
-		assertEquals(true, items.get(1).getAttributesMap().containsKey("type"));
-		assertEquals("42", items.get(2).getAttributesMap().get("age").getValue());
-		assertEquals("Yoshi", items.get(2).getAttributesMap().get("name").getValue());
-		assertEquals(false, items.get(1).getAttributesMap().containsKey("alias"));
+		assertEquals(3, rows.size());
+		assertEquals("Daisy", rows.get(0).getAttributesMap().get("name").getValue());
+		assertEquals("Peach", rows.get(1).getAttributesMap().get("name").getValue());
+		assertEquals(true, rows.get(1).getAttributesMap().containsKey("type"));
+		assertEquals("42", rows.get(2).getAttributesMap().get("age").getValue());
+		assertEquals("Yoshi", rows.get(2).getAttributesMap().get("name").getValue());
+		assertEquals(false, rows.get(1).getAttributesMap().containsKey("alias"));
 		
 		TestHandler.deleteTestTables();
 		TestHandler.createTestTables();
 		TestHandler.insertTestItems(TestHandler.TABLE_NAME);
 		
-		filters = new ArrayList<>();
-		filter = new Filter("age", "GE", "24");
-		filters.add(filter);
-		filter = new Filter("type", "EQ", "princess");
-		filters.add(filter);
+		Filter[] filters2 = {new Filter(new Attribute("age", "24"), "GE"),
+				new Filter(new Attribute("type", "princess"), "EQ")};
 		
-		items = TestHandler.queryHandler.getRows(TestHandler.TABLE_NAME, "AND", filters);
+		rows = TestHandler.queryHandler.getRows(TestHandler.TABLE_NAME, "AND", filters2);
 		
-		assertEquals(1, items.size());
-		assertEquals("Daisy", items.get(0).getAttributesMap().get("name").getValue());
+		assertEquals(1, rows.size());
+		assertEquals("Daisy", rows.get(0).getAttributesMap().get("name").getValue());
 	}
 }

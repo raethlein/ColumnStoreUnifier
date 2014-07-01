@@ -1,39 +1,28 @@
 package model;
 
 public class Filter {
-	private String attributeName;
+	private Attribute attribute;
 	private String comparisonOperator;
-	private String attributeValue;
-	
-	public Filter(String attributeName, String comparisonOperator, String attributeValue) {
+
+	public Filter(Attribute attribute, String comparisonOperator) {
 		super();
-		this.attributeName = attributeName;
+		this.attribute = attribute;
 		this.comparisonOperator = comparisonOperator;
-		this.attributeValue = attributeValue;
 	}
 
-	public String getAttributeName() {
-		return attributeName;
+	public Attribute getAttribute() {
+		return this.attribute;
 	}
-	
-	public void setAttributeName(String attributeName) {
-		this.attributeName = attributeName;
+
+	public void setAttribute(Attribute attribute) {
+		this.attribute = attribute;
 	}
-	
+
 	public String getComparisonOperator() {
 		return comparisonOperator;
 	}
-	
+
 	public void setComparisonOperator(String comparisonOperator) {
 		this.comparisonOperator = comparisonOperator;
 	}
-	
-	public String getAttributeValue() {
-		return attributeValue;
-	}
-	
-	public void setAttributeValue(String attributeValue) {
-		this.attributeValue = attributeValue;
-	}
-
 }

@@ -14,7 +14,6 @@ import model.Row;
 
 import com.amazonaws.services.dynamodbv2.model.ListTablesResult;
 
-
 /**
  * {@inheritDoc}
  * 
@@ -22,6 +21,36 @@ import com.amazonaws.services.dynamodbv2.model.ListTablesResult;
  * 
  */
 public class QueryHandler implements MiddlewareInterface {
+
+	@Override
+	public void alterTableAddColumn(String tableName, String columnName) {
+		switch (Configurator.getUsedDatabase()) {
+		case Cassandra:
+			break;
+		case DynamoDb:
+			break;
+		case Hbase:
+			break;
+		case Hypertable:
+			HypertableQueryHandler.alterTableAddColumn(tableName, columnName);
+			break;
+		}
+	}
+	
+	@Override
+	public void createNamespace(String namespaceName){
+		switch (Configurator.getUsedDatabase()) {
+		case Cassandra:
+			break;
+		case DynamoDb:
+			break;
+		case Hbase:
+			break;
+		case Hypertable:
+			HypertableQueryHandler.createNamespace(namespaceName);
+			break;
+		}
+	}
 
 	@Override
 	public void createTable(String tableName, String primaryKey) {
@@ -43,7 +72,7 @@ public class QueryHandler implements MiddlewareInterface {
 	public List<String> getTableNames() {
 		switch (Configurator.getUsedDatabase()) {
 		case Cassandra:
-			//return CassandraQueryHandler.getTableNames();
+			// return CassandraQueryHandler.getTableNames();
 		case DynamoDb:
 			ListTablesResult result = DynamoDbQueryHandler.listTables();
 			return result.getTableNames();
@@ -60,7 +89,7 @@ public class QueryHandler implements MiddlewareInterface {
 		try {
 			switch (Configurator.getUsedDatabase()) {
 			case Cassandra:
-				//CassandraQueryHandler.deleteTable("", tableName);
+				// CassandraQueryHandler.deleteTable("", tableName);
 				break;
 			case DynamoDb:
 				DynamoDbQueryHandler.deleteTable(tableName);
@@ -68,12 +97,10 @@ public class QueryHandler implements MiddlewareInterface {
 			case Hbase:
 				break;
 			case Hypertable:
-				System.out.println("foo");
 				HypertableQueryHandler.deleteTable(tableName);
 				break;
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -82,7 +109,7 @@ public class QueryHandler implements MiddlewareInterface {
 	public void insertRows(String tableName, List<Row> items) {
 		switch (Configurator.getUsedDatabase()) {
 		case Cassandra:
-		//	CassandraQueryHandler.insertItems("", tableName, items);
+			// CassandraQueryHandler.insertItems("", tableName, items);
 			break;
 		case DynamoDb:
 			DynamoDbQueryHandler.insertItems(tableName, items);
@@ -99,28 +126,32 @@ public class QueryHandler implements MiddlewareInterface {
 	public Row getRowByKey(String tableName, Key... combinedKey) {
 		switch (Configurator.getUsedDatabase()) {
 		case Cassandra:
-			//return CassandraQueryHandler.getRowByKey("", tableName, combinedKey);
+			// return CassandraQueryHandler.getRowByKey("", tableName,
+			// combinedKey);
 		case DynamoDb:
 			return DynamoDbQueryHandler.getRowByKey(tableName, combinedKey);
 		case Hbase:
 			break;
 		case Hypertable:
-			return HypertableQueryHandler.getRowByKey(tableName, combinedKey[0].getValue());
+			return HypertableQueryHandler.getRowByKey(tableName,
+					combinedKey[0].getValue());
 		}
 
 		return null;
 	}
 
-	//TODO: allow select only from one table and not set of tables
+	// TODO: allow select only from one table and not set of tables
 	@Override
-	public List<Row> getRowsByKeys(Map<String, ArrayList<Map<String, String>>> tableNamesWithKeys) {
+	public List<Row> getRowsByKeys(
+			Map<String, ArrayList<Map<String, String>>> tableNamesWithKeys) {
 		switch (Configurator.getUsedDatabase()) {
 		case Cassandra:
 			break;
 		case DynamoDb:
 			return DynamoDbQueryHandler.getItemsByKeys(tableNamesWithKeys);
 		case Hbase:
-			//return HypertableQueryHandler.getRowsByKeys(tableNamesWithKeys.get(0));
+			// return
+			// HypertableQueryHandler.getRowsByKeys(tableNamesWithKeys.get(0));
 		case Hypertable:
 			break;
 		}
@@ -128,16 +159,19 @@ public class QueryHandler implements MiddlewareInterface {
 	}
 
 	@Override
-	public List<Row> getRows(String tableName, String conditionalOperator, List<Filter> filters) {
+	public List<Row> getRows(String tableName, String conditionalOperator,
+			Filter... filters) {
 		switch (Configurator.getUsedDatabase()) {
 		case Cassandra:
-			//return CassandraQueryHandler.scanTable("", tableName, conditionalOperator, filters);
+			// return CassandraQueryHandler.scanTable("", tableName,
+			// conditionalOperator, filters);
 		case DynamoDb:
-			return DynamoDbQueryHandler.scanTable(tableName, filters, conditionalOperator);
+			return DynamoDbQueryHandler.scanTable(tableName, filters,
+					conditionalOperator);
 		case Hbase:
 			break;
 		case Hypertable:
-			return HypertableQueryHandler.scanTable(tableName, conditionalOperator, filters);
+			return HypertableQueryHandler.scanTable(tableName, filters[0]);
 		}
 
 		return null;

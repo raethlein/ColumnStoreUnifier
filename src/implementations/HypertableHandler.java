@@ -10,7 +10,6 @@ public class HypertableHandler {
 	
 	public static void connectToDatabase(String host, String port){
 		try {
-			System.out.println(host + port);
 			CLIENT = ThriftClient.create(host, Integer.parseInt(port));
 			NAMESPACE = CLIENT.namespace_open("test");
 		}

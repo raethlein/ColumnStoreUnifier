@@ -14,6 +14,24 @@ import org.hypertable.thriftgen.HqlResult;
 
 
 public class HypertableQueryHandler {
+	
+	public static void alterTableAddColumn(String tableName, String columnFamilyName){
+		try {
+			String queryString = String.format("ALTER TABLE %s ADD (%s)", tableName, columnFamilyName);
+			HypertableHandler.CLIENT.hql_query(HypertableHandler.NAMESPACE, queryString);
+		} catch (ClientException | TException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	public static void createNamespace(String namespaceName){
+		try {
+			HypertableHandler.CLIENT.hql_query(HypertableHandler.NAMESPACE, "CREATE NAMESPACE " + namespaceName);
+		} catch (ClientException | TException e) {
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * Create a table with given name. The table contains only one column family
@@ -53,10 +71,8 @@ public class HypertableQueryHandler {
 
 	public static void deleteTable(String tableName) {
 		try {
-			System.out.println("bar" + HypertableHandler.CLIENT + tableName);
 			String queryString = String.format("DROP TABLE IF EXISTS %s", tableName);
 			HypertableHandler.CLIENT.hql_query(HypertableHandler.NAMESPACE, queryString);
-			System.out.println("end");
 		}
 		catch (ClientException | TException e) {
 			e.printStackTrace();
@@ -125,16 +141,9 @@ public class HypertableQueryHandler {
 		return null;
 	}
 
-	public static List<Row> scanTable(String tableName, String conditionalOperator, List<Filter> filters) {
-		String whereClause = "";
-		for (Filter filter : filters) {
-			if (!whereClause.equals("")) {
-				whereClause += " " + conditionalOperator + " ";
-			}
-			whereClause = "" + filter.getAttributeName() + " " + filter.getComparisonOperator() + " \"" + filter.getAttributeValue() + "\"";
-		}
-		System.out.println(whereClause);
-		String queryString = String.format("SELECT * FROM %s WHERE %s", tableName, whereClause);
+	public static List<Row> scanTable(String tableName, Filter filter) {
+		String queryString = String.format("SELECT %s FROM %s WHERE %1$s = \"%s\"", 
+				filter.getAttribute().getColumnFamily(), tableName, filter.getAttribute().getValue());
 
 		try {
 			HqlResult result = HypertableHandler.CLIENT.hql_query(HypertableHandler.NAMESPACE, queryString);
