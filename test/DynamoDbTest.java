@@ -1,11 +1,10 @@
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import model.Filter;
+import model.Key;
 import model.Row;
 
 import org.junit.Test;
@@ -27,10 +26,7 @@ public class DynamoDbTest {
 		TestHandler.createTestTables();
 		TestHandler.insertTestItems(TestHandler.TABLE_NAME);
 
-		Map<String, String> key = new HashMap<>();
-		key.put("id", "2");
-
-		Row item = TestHandler.queryHandler.getRowByKey(TestHandler.TABLE_NAME, key);
+		Row item = TestHandler.queryHandler.getRowByKey(TestHandler.TABLE_NAME, new Key("id", "2"));
 		assertEquals("Bowser", item.getAttributesMap().get("name").getValue());
 		assertEquals(true, item.getAttributesMap().containsKey("type"));
 	}

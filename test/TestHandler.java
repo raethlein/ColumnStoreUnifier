@@ -22,40 +22,40 @@ public class TestHandler {
 		List<Attribute> attributes = new ArrayList<>();
 
 		if (tableName.equals(TABLE_NAME)) {
-			attributes.add(new Attribute("name", "Mario").withColumnFamil(INDEX));
+			attributes.add(new Attribute("name", "Mario").withColumnFamily(INDEX));
 			items.add(new Row(new Key("id", "1"), attributes));
 
 			attributes = new ArrayList<>();
-			attributes.add(new Attribute("name", "Bowser").withColumnFamil(INDEX));
-			attributes.add(new Attribute("type", "turtle").withColumnFamil(INDEX));
+			attributes.add(new Attribute("name", "Bowser").withColumnFamily(INDEX));
+			attributes.add(new Attribute("type", "turtle").withColumnFamily(INDEX));
 			items.add(new Row(new Key("id", "2"), attributes));
 
 			attributes = new ArrayList<>();
-			attributes.add(new Attribute("name", "Peach").withColumnFamil(INDEX));
-			attributes.add(new Attribute("type", "princess").withColumnFamil(INDEX));
-			attributes.add(new Attribute("age", "23").withColumnFamil(INDEX));
+			attributes.add(new Attribute("name", "Peach").withColumnFamily(INDEX));
+			attributes.add(new Attribute("type", "princess").withColumnFamily(INDEX));
+			attributes.add(new Attribute("age", "23").withColumnFamily(INDEX));
 			items.add(new Row(new Key("id", "3"), attributes));
 
 			attributes = new ArrayList<>();
-			attributes.add(new Attribute("name", "Daisy").withColumnFamil(INDEX));
-			attributes.add(new Attribute("type", "princess").withColumnFamil(INDEX));
-			attributes.add(new Attribute("age", "25").withColumnFamil(INDEX));
+			attributes.add(new Attribute("name", "Daisy").withColumnFamily(INDEX));
+			attributes.add(new Attribute("type", "princess").withColumnFamily(INDEX));
+			attributes.add(new Attribute("age", "25").withColumnFamily(INDEX));
 			items.add(new Row(new Key("id", "4"), attributes));
 
 			attributes = new ArrayList<>();
-			attributes.add(new Attribute("name", "Yoshi").withColumnFamil(INDEX));
-			attributes.add(new Attribute("type", "dinosaur").withColumnFamil(INDEX));
-			attributes.add(new Attribute("age", "42").withColumnFamil(INDEX));
+			attributes.add(new Attribute("name", "Yoshi").withColumnFamily(INDEX));
+			attributes.add(new Attribute("type", "dinosaur").withColumnFamily(INDEX));
+			attributes.add(new Attribute("age", "42").withColumnFamily(INDEX));
 			items.add(new Row(new Key("id", "5"), attributes));
 		}
 		else if (tableName.equals(TABLE_NAME2)) {
-			attributes.add(new Attribute("name", "Link").withColumnFamil(INDEX));
-			attributes.add(new Attribute("status", "hero of time").withColumnFamil(INDEX));
+			attributes.add(new Attribute("name", "Link").withColumnFamily(INDEX));
+			attributes.add(new Attribute("status", "hero of time").withColumnFamily(INDEX));
 			items.add(new Row(new Key("id", "100"), attributes));
 
 			attributes = new ArrayList<>();
-			attributes.add(new Attribute("name", "Ganondorf").withColumnFamil(INDEX));
-			attributes.add(new Attribute("alias", "Ganon").withColumnFamil(INDEX));
+			attributes.add(new Attribute("name", "Ganondorf").withColumnFamily(INDEX));
+			attributes.add(new Attribute("alias", "Ganon").withColumnFamily(INDEX));
 			items.add(new Row(new Key("id", "200"), attributes));
 		}
 		queryHandler.insertRows(tableName, items);

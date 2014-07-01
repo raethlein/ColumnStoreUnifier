@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import model.Filter;
+import model.Key;
 import model.Row;
 
 import com.amazonaws.services.dynamodbv2.model.ListTablesResult;
@@ -97,7 +98,7 @@ public class QueryHandler implements MiddlewareInterface {
 	}
 
 	@Override
-	public Row getRowByKey(String tableName, Map<String, String> combinedKey) {
+	public Row getRowByKey(String tableName, Key... combinedKey) {
 		switch (Configurator.getUsedDatabase()) {
 		case Cassandra:
 			return CassandraQueryHandler.getRowByKey(tableName, combinedKey);
@@ -106,8 +107,7 @@ public class QueryHandler implements MiddlewareInterface {
 		case Hbase:
 			break;
 		case Hypertable:
-			String key = combinedKey.entrySet().iterator().next().getValue();
-			return HypertableQueryHandler.getRowByKey(tableName, key);
+			return HypertableQueryHandler.getRowByKey(tableName, combinedKey[0].getValue());
 		}
 
 		return null;

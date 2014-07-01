@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import model.Filter;
+import model.Key;
 import model.Row;
 
 
@@ -22,7 +23,7 @@ public interface MiddlewareInterface {
 	 * @param rows
 	 */
 	public void insertRows(String tableName, List<Row> rows);
-	public Row getRowByKey(String tableName, Map<String, String> combinedKey);
+	public Row getRowByKey(String tableName, Key... combinedKey);
 	public List<Row> getRowsByKeys(Map<String, ArrayList<Map<String, String>>> tableNamesWithKeys);
 	public List<Row> getRows(String tableName, String conditionalOperator, List<Filter> filters);
 	public List<String> getTableNames();

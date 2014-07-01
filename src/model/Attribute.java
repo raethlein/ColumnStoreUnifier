@@ -39,7 +39,7 @@ public class Attribute {
 		this.columnFamily = columnFamily;
 	}
 	
-	public Attribute withColumnFamil(String columnFamily){
+	public Attribute withColumnFamily(String columnFamily){
 		this.columnFamily = columnFamily;
 		return this;
 	}
