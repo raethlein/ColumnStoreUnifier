@@ -1,4 +1,5 @@
 package middleware;
+import implementations.CassandraHandler;
 import implementations.DynamoDbHandler;
 import implementations.HypertableHandler;
 
@@ -46,7 +47,7 @@ public class Configurator {
 				break;
 			case "Cassandra":
 				setUsedDatabase(Implementations.Cassandra);
-				//CassandraHandler.connectToDatabase(databaseHost);
+				CassandraHandler.connectToDatabase(databaseHost);
 				break;
 			}
 
