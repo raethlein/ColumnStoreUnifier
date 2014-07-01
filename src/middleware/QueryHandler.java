@@ -1,5 +1,6 @@
 package middleware;
 
+import implementations.CassandraQueryHandler;
 import implementations.DynamoDbQueryHandler;
 import implementations.HypertableQueryHandler;
 import interfaces.MiddlewareInterface;
@@ -26,6 +27,7 @@ public class QueryHandler implements MiddlewareInterface {
 	public void createTable(String tableName, String primaryKey) {
 		switch (Configurator.getUsedDatabase()) {
 		case Cassandra:
+			CassandraQueryHandler.createTable(tableName, primaryKey);
 			break;
 		case DynamoDb:
 			DynamoDbQueryHandler.createTable(tableName, primaryKey);
@@ -42,7 +44,7 @@ public class QueryHandler implements MiddlewareInterface {
 	public List<String> getTableNames() {
 		switch (Configurator.getUsedDatabase()) {
 		case Cassandra:
-			//return CassandraQueryHandler.getTableNames();
+			return CassandraQueryHandler.getTableNames();
 		case DynamoDb:
 			ListTablesResult result = DynamoDbQueryHandler.listTables();
 			return result.getTableNames();
@@ -59,7 +61,7 @@ public class QueryHandler implements MiddlewareInterface {
 		try {
 			switch (Configurator.getUsedDatabase()) {
 			case Cassandra:
-				//CassandraQueryHandler.deleteTable("", tableName);
+				CassandraQueryHandler.deleteTable(tableName);
 				break;
 			case DynamoDb:
 				DynamoDbQueryHandler.deleteTable(tableName);
@@ -81,7 +83,7 @@ public class QueryHandler implements MiddlewareInterface {
 	public void insertRows(String tableName, List<Row> items) {
 		switch (Configurator.getUsedDatabase()) {
 		case Cassandra:
-		//	CassandraQueryHandler.insertItems("", tableName, items);
+			CassandraQueryHandler.insertItems(tableName, items);
 			break;
 		case DynamoDb:
 			DynamoDbQueryHandler.insertItems(tableName, items);
@@ -98,7 +100,7 @@ public class QueryHandler implements MiddlewareInterface {
 	public Row getRowByKey(String tableName, Map<String, String> combinedKey) {
 		switch (Configurator.getUsedDatabase()) {
 		case Cassandra:
-			//return CassandraQueryHandler.getRowByKey("", tableName, combinedKey);
+			return CassandraQueryHandler.getRowByKey(tableName, combinedKey);
 		case DynamoDb:
 			return DynamoDbQueryHandler.getRowByKey(tableName, combinedKey);
 		case Hbase:
@@ -131,7 +133,7 @@ public class QueryHandler implements MiddlewareInterface {
 	public List<Row> getRows(String tableName, String conditionalOperator, List<Filter> filters) {
 		switch (Configurator.getUsedDatabase()) {
 		case Cassandra:
-			//return CassandraQueryHandler.scanTable("", tableName, conditionalOperator, filters);
+			return CassandraQueryHandler.scanTable(tableName, conditionalOperator, filters);
 		case DynamoDb:
 			return DynamoDbQueryHandler.scanTable(tableName, filters, conditionalOperator);
 		case Hbase:
