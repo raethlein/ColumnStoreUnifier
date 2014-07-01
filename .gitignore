@@ -1,0 +1,79 @@
+# built application files
+*.apk
+*.ap_
+
+# files for the dex VM
+*.dex
+
+# Java class files
+*.class
+
+# generated files
+gen/
+out/
+target/
+target/*
+release/
+
+#  thumbnail db
+desktop.ini
+.DS_Store
+
+# Maven configuration
+pom.properties
+
+# Eclipse configuration
+.settings
+lint.xml
+
+# Idea non-crucial project fileS
+*.idea
+*.iws
+.idea
+
+# Sandbox stuff
+_sandbox
+
+*target*
+
+*.war
+*.ear
+
+
+# eclipse specific git ignore
+*.pydevproject
+.project
+.metadata
+bin/**
+tmp/**
+tmp/**/*
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.classpath
+.settings/
+.loadpath
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# gwt caches and compiled units #
+war/[gwt project name]/
+gwt-unitCache/
+test-classes/
+www-test/
+
+# boilerplate generated classes #
+.apt_generated/
+
+# more caches and things from deploy #
+war/WEB-INF/deploy/
+war/WEB-INF/classes/
+
+# App engine generated #
+war/WEB-INF/appengine-generated/
