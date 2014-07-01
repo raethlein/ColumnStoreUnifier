@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # built application files
 *.apk
 *.ap_
@@ -77,3 +78,17 @@ war/WEB-INF/classes/
 
 # App engine generated #
 war/WEB-INF/appengine-generated/
+=======
+*.class
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+>>>>>>> c63a0f46b28e4a6e7185e778bea5f535dcd14274
