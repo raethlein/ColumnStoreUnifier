@@ -1,18 +1,20 @@
 package implementations;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import model.Attribute;
+import model.Filter;
+import model.Key;
 
 import com.datastax.driver.core.ColumnDefinitions;
 import com.datastax.driver.core.ColumnMetadata;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
-
-import model.Attribute;
-import model.Filter;
+import com.datastax.driver.core.TableMetadata;
 
 public class CassandraQueryHandler {
 	
@@ -41,7 +43,7 @@ public class CassandraQueryHandler {
 	
 	public static void createTable(String tableName, String primaryKey) {
 		String query = "CREATE TABLE IF NOT EXISTS "+tableName+" (";
-		query += primaryKey+" text PRIMARY KEY);";
+		query += primaryKey+" int PRIMARY KEY);";
 		CassandraHandler.session.execute(query);
 	}
 	
@@ -68,11 +70,11 @@ public class CassandraQueryHandler {
 	 * @return A list of all table names.
 	 */
 	public static List<String> getTableNames() {
-		String query = "DESCRIBE TABLES";
+		
+		Collection<TableMetadata> tables = CassandraHandler.cluster.getMetadata().getKeyspace(CassandraHandler.keyspace).getTables();
 		ArrayList<String> tableNames = new ArrayList<String>(); 
-		ResultSet results = CassandraHandler.session.execute(query);
-		for(Row row : results) {
-			tableNames.add(row.getString(0));
+		for (TableMetadata table : tables) {
+			tableNames.add(table.getName());
 		}
 		return tableNames;
 	}
@@ -99,25 +101,25 @@ public class CassandraQueryHandler {
 		for (ColumnMetadata column : columns) {
 			columnNames.add(column.getName());
 		}
-		
-		
+		query += item.getKey().getName()+",";
 		for (Attribute attribute : attributes) {
 			if(!columnNames.contains(attribute.getName())) {
 				alterTableAddColumn(table, attribute.getName());
 			}
-			query += " "+attribute.getName()+", ";
+			query += " "+attribute.getName()+",";
 		}
 		query = query.substring(0, query.length()-1);
-		query += " VALUES (";
+		query += ") VALUES ("+item.getKey().getValue()+", ";
 		for (Attribute attribute : attributes) {
-			query += " "+attribute.getValue()+", ";
+			query += " '"+attribute.getValue()+"',";
 		}
 		query = query.substring(0, query.length()-1);
+		query += " );";
+		System.out.println(query);
 		CassandraHandler.session.execute(query);
 	}
 	
 	public static model.Row getRowByKey(String tableName, Map<String, String> combinedKey) {
-		//TODO what about selecting only a few columns and not all?
 		String query = "SELECT * ";
 		query += " FROM "+tableName;
 		query += " WHERE ";
@@ -129,14 +131,18 @@ public class CassandraQueryHandler {
 		ResultSet results = CassandraHandler.session.execute(query);
 		Row row = results.one();
 		
-		List<ColumnDefinitions.Definition> columns = row.getColumnDefinitions().asList();
+		List<ColumnDefinitions.Definition> columns = new LinkedList<ColumnDefinitions.Definition>(row.getColumnDefinitions().asList());
 		List<Attribute> attributes = new ArrayList<Attribute>();
+		
+		ColumnDefinitions.Definition definition = columns.get(0);
+		Key key = new Key(definition.getName(), String.valueOf(row.getInt(definition.getName())));
+		columns.remove(0);
 		
 		for(ColumnDefinitions.Definition def: columns) {
 			Attribute attribute = new Attribute(def.getName(), row.getString(def.getName()));
 			attributes.add(attribute);
 		}
-		model.Row result = new model.Row(attributes);
+		model.Row result = new model.Row(key, attributes);
 		return result;	
 	}
 	
@@ -147,6 +153,8 @@ public class CassandraQueryHandler {
 			query += " "+conditionalOperator+" ";
 		}
 		query = query.substring(0, query.length()-conditionalOperator.length()-1);
+		query += ";";
+		System.out.println(query);
 		ResultSet resultsFromDB = CassandraHandler.session.execute(query);
 		List<Row> rows = resultsFromDB.all();
 		List<ColumnDefinitions.Definition> columns = rows.get(0).getColumnDefinitions().asList();
