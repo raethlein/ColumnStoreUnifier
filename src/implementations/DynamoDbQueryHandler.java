@@ -7,6 +7,7 @@ import java.util.Map;
 import model.Attribute;
 import model.Filter;
 import model.Row;
+import model.Key;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
@@ -118,10 +119,10 @@ public class DynamoDbQueryHandler {
 	 * @param combinedKey
 	 * @return
 	 */
-	public static Row getRowByKey(String tableName, Map<String, String> combinedKey) {
+	public static Row getRowByKey(String tableName, Key... combinedKey) {
 		Map<String, AttributeValue> transformedKey = new HashMap<>();
-		for (String key : combinedKey.keySet()) {
-			transformedKey.put(key, new AttributeValue().withS(combinedKey.get(key)));
+		for (Key key : combinedKey) {
+			transformedKey.put(key.getName(), new AttributeValue().withS(key.getValue()));
 		}
 
 		GetItemResult result = DynamoDbHandler.CLIENT.getItem(new GetItemRequest(tableName, transformedKey));
