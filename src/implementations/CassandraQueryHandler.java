@@ -119,12 +119,12 @@ public class CassandraQueryHandler {
 		CassandraHandler.session.execute(query);
 	}
 	
-	public static model.Row getRowByKey(String tableName, Map<String, String> combinedKey) {
+	public static model.Row getRowByKey(String tableName, Key... keys) {
 		String query = "SELECT * ";
 		query += " FROM "+tableName;
 		query += " WHERE ";
-		for(String key : combinedKey.keySet()) {
-			query += key+" = "+combinedKey.get(key)+" AND ";
+		for(Key key : keys) {
+			query += key.getName()+" = "+key.getValue()+" AND ";
 		}
 		query = query.substring(0, query.length()-4);
 		
