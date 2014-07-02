@@ -146,10 +146,10 @@ public class CassandraQueryHandler {
 		return result;	
 	}
 	
-	public static List<model.Row> scanTable(String tableName, String conditionalOperator, List<Filter> filters) {
+	public static List<model.Row> scanTable(String tableName, String conditionalOperator, Filter... filters) {
 		String query = "SELECT * FROM " + tableName + " WHERE ";
 		for (Filter filter : filters) {
-			query += filter.getAttributeName()+" "+filter.getComparisonOperator()+" "+filter.getAttributeValue();
+			query += filter.getAttribute().getName()+" "+filter.getComparisonOperator()+" "+filter.getAttribute().getValue();
 			query += " "+conditionalOperator+" ";
 		}
 		query = query.substring(0, query.length()-conditionalOperator.length()-1);

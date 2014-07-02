@@ -24,6 +24,35 @@ import com.amazonaws.services.dynamodbv2.model.ListTablesResult;
  */
 public class QueryHandler implements MiddlewareInterface {
 
+public void alterTableAddColumn(String tableName, String columnName) {
+		switch (Configurator.getUsedDatabase()) {
+		case Cassandra:
+			break;
+		case DynamoDb:
+			break;
+		case Hbase:
+			break;
+		case Hypertable:
+			HypertableQueryHandler.alterTableAddColumn(tableName, columnName);
+			break;
+		}
+	}
+	
+	@Override
+	public void createNamespace(String namespaceName){
+		switch (Configurator.getUsedDatabase()) {
+		case Cassandra:
+			break;
+		case DynamoDb:
+			break;
+		case Hbase:
+			break;
+		case Hypertable:
+			HypertableQueryHandler.createNamespace(namespaceName);
+			break;
+		}
+	}
+
 	@Override
 	public void createTable(String tableName, String primaryKey) {
 		switch (Configurator.getUsedDatabase()) {
@@ -70,7 +99,6 @@ public class QueryHandler implements MiddlewareInterface {
 			case Hbase:
 				break;
 			case Hypertable:
-				System.out.println("foo");
 				HypertableQueryHandler.deleteTable(tableName);
 				break;
 			}
@@ -130,7 +158,7 @@ public class QueryHandler implements MiddlewareInterface {
 	}
 
 	@Override
-	public List<Row> getRows(String tableName, String conditionalOperator, List<Filter> filters) {
+	public List<Row> getRows(String tableName, String conditionalOperator, Filter... filters) {
 		switch (Configurator.getUsedDatabase()) {
 		case Cassandra:
 			return CassandraQueryHandler.scanTable(tableName, conditionalOperator, filters);
@@ -139,7 +167,7 @@ public class QueryHandler implements MiddlewareInterface {
 		case Hbase:
 			break;
 		case Hypertable:
-			return HypertableQueryHandler.scanTable(tableName, conditionalOperator, filters);
+			return HypertableQueryHandler.scanTable(tableName, filters[0]);
 		}
 
 		return null;

@@ -189,13 +189,13 @@ public class DynamoDbQueryHandler {
 	 *            or OR connectors, no mix.
 	 * @return
 	 */
-	public static List<Row> scanTable(String tableName, List<Filter> filters, String conditionalOperator) {
+	public static List<Row> scanTable(String tableName, Filter[] filters, String conditionalOperator) {
 		Map<String, Condition> scanFilter = new HashMap<>();
 		for (Filter filter : filters) {
-			scanFilter.put(filter.getAttributeName(),
+			scanFilter.put(filter.getAttribute().getValue(),
 					new Condition()
 							.withComparisonOperator(filter.getComparisonOperator())
-							.withAttributeValueList(new AttributeValue().withS(filter.getAttributeValue())));
+							.withAttributeValueList(new AttributeValue().withS(filter.getAttribute().getValue())));
 		}
 		ScanResult scanResult = DynamoDbHandler.CLIENT.scan(new ScanRequest(tableName)
 				.withConditionalOperator(conditionalOperator).withScanFilter(scanFilter));

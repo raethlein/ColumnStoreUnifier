@@ -62,10 +62,8 @@ public class TestHandler {
 	}
 
 	public static void deleteTestTables() {
-		System.out.println("ofjeoivj");
 		queryHandler.deleteTable(TABLE_NAME);
 		queryHandler.deleteTable(TABLE_NAME2);
-		System.out.println("delete");
 	}
 
 	public static void createTestTables() {
