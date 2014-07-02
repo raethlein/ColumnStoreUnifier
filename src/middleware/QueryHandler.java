@@ -27,6 +27,7 @@ public class QueryHandler implements MiddlewareInterface {
 public void alterTableAddColumn(String tableName, String columnName) {
 		switch (Configurator.getUsedDatabase()) {
 		case Cassandra:
+			CassandraQueryHandler.alterTableAddColumn(tableName, columnName);
 			break;
 		case DynamoDb:
 			break;
@@ -42,6 +43,7 @@ public void alterTableAddColumn(String tableName, String columnName) {
 	public void createNamespace(String namespaceName){
 		switch (Configurator.getUsedDatabase()) {
 		case Cassandra:
+			CassandraQueryHandler.createKeyspace(namespaceName);
 			break;
 		case DynamoDb:
 			break;
