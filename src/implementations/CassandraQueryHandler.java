@@ -18,6 +18,34 @@ import com.datastax.driver.core.TableMetadata;
 
 public class CassandraQueryHandler {
 	
+	
+	/**
+	 * Creates the keyspace for a cassandra cluster. A keyspace can be seen as a database in a RDBMS.
+	 * @param name The name of the keyspace
+	 * @param replication The replication strategy as a JSON string. If null, a default JSON string is used.
+	 */
+	public static void createKeyspace(String keyspaceName, String replication) {
+		String query = "CREATE KEYSPACE IF NOT EXISTS ";
+		query += keyspaceName;
+		query += " WITH replication ";
+		if (replication == null) {
+			query += "{'class': 'SimpleStrategy', 'replication_factor':'3'}";
+		} else {
+			query += replication;
+		}
+		CassandraHandler.session.execute(query);
+	}
+	
+	/**
+	 * Creates a keyspace for a cassandra cluster with a default replication.
+	 * 
+	 * @param name The name of the keyspace
+	 */
+	public static void createKeyspace(String keyspaceName) {
+		createKeyspace(keyspaceName, null);
+	}
+	
+	
 	/**
 	 * Creates a table in a keyspace. Everything is saved as a blob, 
 	 * so the client has to handle the converting from and to bytes.
