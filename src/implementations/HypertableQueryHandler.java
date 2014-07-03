@@ -1,10 +1,8 @@
 package implementations;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import model.Attribute;
 import model.Filter;
@@ -156,9 +154,9 @@ public class HypertableQueryHandler {
 	// TODO: implement conditional select programmatically
 	public static List<Row> scanTable(String tableName,
 			String conditionalOperator, Filter[] filters) {
-		Map<String, Filter> filterMap = new HashMap<>();
+		ArrayList<Filter> filterList = new ArrayList<>();
 		for (Filter filter : filters) {
-			filterMap.put(filter.getAttribute().getName(), filter);
+			filterList.add(filter);
 		}
 
 		String queryString = String.format("SELECT * FROM %s", tableName);
@@ -170,26 +168,53 @@ public class HypertableQueryHandler {
 			String tempRow = "";
 
 			boolean passesCheck;
-			boolean rowHasColumn;
+			boolean alreadyAddedAttribute;
+			int numberOfPassedFilters;
+			int numberOfFittingColumns;
 			Iterator<Cell> resultIterator = result.getCellsIterator();
 
 			while (resultIterator.hasNext()) {
+				alreadyAddedAttribute = false;
 				Cell cell = resultIterator.next();
-				
-				if ((!tempRow.equals(cell.key.row) && !tempRow.equals("")) || !resultIterator.hasNext()) {
+
+				if ((!tempRow.equals(cell.key.row) && !tempRow.equals(""))
+						|| !resultIterator.hasNext()) {
+					if (!resultIterator.hasNext()) {
+						String columnName = new String(
+								cell.key.column_qualifier.toString());
+						String columnValue = new String(cell.getValue());
+						attributes.add(new Attribute(columnName, columnValue));
+						alreadyAddedAttribute = true;
+					}
+
 					passesCheck = true;
-					rowHasColumn = false;
+					numberOfPassedFilters = 0;
+					numberOfFittingColumns = 0;
 					for (Attribute attr : attributes) {
-						Filter filter = filterMap.get(attr.getName());
-						if (filter != null) {
-							rowHasColumn = true;
-							if (!filter(filter, attr.getValue())) {
-								passesCheck = false;
-								break;
-							}
+						for (Filter filter : filterList) {
+							if(attr.getName().equals(filter.getAttribute().getName())){
+								numberOfFittingColumns++;
+								if (!filter(filter, attr.getValue())) {
+									passesCheck = false;
+									// break;
+								} else {
+									numberOfPassedFilters++;
+								}
+							}	
 						}
 					}
-					if (!rowHasColumn) {
+					if (conditionalOperator.equals("OR")) {
+						if (numberOfPassedFilters == 0) {
+							passesCheck = false;
+						} else {
+							passesCheck = true;
+						}
+					} else if (conditionalOperator.equals("AND")) {
+						if (numberOfPassedFilters != filterList.size()) {
+							passesCheck = false;
+						}
+					}
+					if (numberOfFittingColumns < filterList.size()) {
 						passesCheck = false;
 					}
 					if (passesCheck) {
@@ -198,10 +223,12 @@ public class HypertableQueryHandler {
 					attributes = new ArrayList<>();
 				}
 
-				String columnName = new String(
-						cell.key.column_qualifier.toString());
-				String columnValue = new String(cell.getValue());
-				attributes.add(new Attribute(columnName, columnValue));
+				if (!alreadyAddedAttribute) {
+					String columnName = new String(
+							cell.key.column_qualifier.toString());
+					String columnValue = new String(cell.getValue());
+					attributes.add(new Attribute(columnName, columnValue));
+				}
 
 				tempRow = cell.key.row;
 			}
@@ -216,18 +243,15 @@ public class HypertableQueryHandler {
 	}
 
 	private static boolean filter(Filter filter, String columnValue) {
-		System.out.println(filter.getComparisonOperator());
 		if (filter.getComparisonOperator().equals("=")) {
 			if (columnValue.compareTo(filter.getAttribute().getValue()) == 0) {
 				return true;
 			}
-		} 
-		else if(filter.getComparisonOperator().equals("!=")){
+		} else if (filter.getComparisonOperator().equals("!=")) {
 			if (columnValue.compareTo(filter.getAttribute().getValue()) != 0) {
 				return true;
 			}
-		}
-		else {
+		} else {
 			try {
 				double parsedFilterValue = Double.parseDouble(filter
 						.getAttribute().getValue());

@@ -38,15 +38,22 @@ public class HypertableTest {
 		TestHandler.createTestTables();
 		TestHandler.insertTestItems(TestHandler.TABLE_NAME);
 
-//		Filter filter = new Filter(new Attribute("type", "turtle"), "=");
-		Filter filter = new Filter(new Attribute("age", "23"), "!=");
+		Filter[] filter = {new Filter(new Attribute("age", "23"), "!="), 
+				new Filter(new Attribute("type", "princess"), "!="), new Filter(new Attribute("name", "Peach"), "!=")};
 		
-		List<Row> rows = TestHandler.queryHandler.getRows(TestHandler.TABLE_NAME, "AND", filter);
-		for(Row row : rows){
-			for(Attribute att : row.getAttributes()){
-				System.out.println(att.toString());
-			}
-		}
-		assertEquals("Daisy", rows.get(4).getAttributesMap().get("name").getValue());
+		List<Row> rows = TestHandler.queryHandler.getRows(TestHandler.TABLE_NAME, "OR", filter);
+		
+		assertEquals(2, rows.size());
+		assertEquals("Daisy", rows.get(0).getAttributesMap().get("name").getValue());
+		assertEquals("42", rows.get(1).getAttributesMap().get("age").getValue());
+		assertEquals("age", rows.get(1).getAttributesMap().get("age").getName());
+		
+		Filter[] filter2 = {new Filter(new Attribute("name", "Mario"), "="), new Filter(new Attribute("name", "Bowser"), "=")};
+		
+		rows = TestHandler.queryHandler.getRows(TestHandler.TABLE_NAME, "OR", filter2);
+		
+		assertEquals("Mario", rows.get(0).getAttributesMap().get("name").getValue());
+		assertEquals("Bowser", rows.get(1).getAttributesMap().get("name").getValue());
+		assertEquals("turtle", rows.get(1).getAttributesMap().get("type").getValue());
 	}
 }

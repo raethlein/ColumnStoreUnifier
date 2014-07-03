@@ -45,6 +45,6 @@ public class Attribute {
 	}
 	
 	public String toString(){
-		return "{name: " + this.name + ", value: " + this.value + " }";
+		return "{name: " + this.name + ", value: " + this.value + "}";
 	}
 }
