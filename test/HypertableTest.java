@@ -2,6 +2,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
+import middleware.ComparisonOperatorMapper.Operator;
 import model.Attribute;
 import model.Filter;
 import model.Key;
@@ -38,8 +39,8 @@ public class HypertableTest {
 		TestHandler.createTestTables();
 		TestHandler.insertTestItems(TestHandler.TABLE_NAME);
 
-		Filter[] filter = {new Filter(new Attribute("age", "23"), "!="), 
-				new Filter(new Attribute("type", "princess"), "!="), new Filter(new Attribute("name", "Peach"), "!=")};
+		Filter[] filter = {new Filter(new Attribute("age", "23"),  Operator.NE), 
+				new Filter(new Attribute("type", "princess"),  Operator.NE), new Filter(new Attribute("name", "Peach"), Operator.NE)};
 		
 		List<Row> rows = TestHandler.queryHandler.getRows(TestHandler.TABLE_NAME, "OR", filter);
 		
@@ -48,7 +49,7 @@ public class HypertableTest {
 		assertEquals("42", rows.get(1).getAttributesMap().get("age").getValue());
 		assertEquals("age", rows.get(1).getAttributesMap().get("age").getName());
 		
-		Filter[] filter2 = {new Filter(new Attribute("name", "Mario"), "="), new Filter(new Attribute("name", "Bowser"), "=")};
+		Filter[] filter2 = {new Filter(new Attribute("name", "Mario"),  Operator.EQ), new Filter(new Attribute("name", "Bowser"), Operator.EQ)};
 		
 		rows = TestHandler.queryHandler.getRows(TestHandler.TABLE_NAME, "OR", filter2);
 		

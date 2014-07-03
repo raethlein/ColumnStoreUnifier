@@ -7,6 +7,7 @@ public class UnifyingMiddleware {
 	public synchronized static QueryHandler getQueryHandler() {
 		if (queryHandler == null) {
 			Configurator.init();
+			ComparisonOperatorMapper.initConditionalOperatorMapper();
 			queryHandler = new QueryHandler();
 		}
 		
