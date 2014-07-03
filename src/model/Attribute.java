@@ -43,4 +43,8 @@ public class Attribute {
 		this.columnFamily = columnFamily;
 		return this;
 	}
+	
+	public String toString(){
+		return "{name: " + this.name + ", value: " + this.value + " }";
+	}
 }

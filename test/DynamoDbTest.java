@@ -98,4 +98,5 @@ public class DynamoDbTest {
 		assertEquals(1, rows.size());
 		assertEquals("Daisy", rows.get(0).getAttributesMap().get("name").getValue());
 	}
+
 }

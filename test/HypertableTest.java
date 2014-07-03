@@ -38,10 +38,15 @@ public class HypertableTest {
 		TestHandler.createTestTables();
 		TestHandler.insertTestItems(TestHandler.TABLE_NAME);
 
-		Filter filter = new Filter(new Attribute("type", "princess").withColumnFamily("id"), "=");
+//		Filter filter = new Filter(new Attribute("type", "turtle"), "=");
+		Filter filter = new Filter(new Attribute("age", "23"), "!=");
 		
 		List<Row> rows = TestHandler.queryHandler.getRows(TestHandler.TABLE_NAME, "AND", filter);
-
+		for(Row row : rows){
+			for(Attribute att : row.getAttributes()){
+				System.out.println(att.toString());
+			}
+		}
 		assertEquals("Daisy", rows.get(4).getAttributesMap().get("name").getValue());
 	}
 }

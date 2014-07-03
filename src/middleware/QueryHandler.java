@@ -171,7 +171,7 @@ public class QueryHandler implements MiddlewareInterface {
 		case Hbase:
 			break;
 		case Hypertable:
-			return HypertableQueryHandler.scanTable(tableName, filters[0]);
+			return HypertableQueryHandler.scanTable(tableName, conditionalOperator, filters);
 		}
 
 		return null;
