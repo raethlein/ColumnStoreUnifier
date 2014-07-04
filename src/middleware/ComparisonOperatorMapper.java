@@ -3,6 +3,8 @@ package middleware;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.hadoop.hbase.filter.CompareFilter;
+
 public class ComparisonOperatorMapper {
 	public enum Operator {
 		EQ,
@@ -15,6 +17,7 @@ public class ComparisonOperatorMapper {
 	
 	private static Map<Operator, String> wordOperators = new HashMap<>();
 	private static Map<Operator, String> charOperator = new HashMap<>();
+	private static Map<Operator, CompareFilter.CompareOp> constantOperator = new HashMap<>();
 	
 	public static void initConditionalOperatorMapper(){
 		wordOperators.put(Operator.EQ, "EQ");
@@ -30,6 +33,13 @@ public class ComparisonOperatorMapper {
 		charOperator.put(Operator.GT, ">");
 		charOperator.put(Operator.LE, "<=");
 		charOperator.put(Operator.GE, ">=");
+		
+//		constantOperator.put(Operator.EQ, CompareFilter.CompareOp.EQUAL);
+//		constantOperator.put(Operator.NE, CompareFilter.CompareOp.NOT_EQUAL);
+//		constantOperator.put(Operator.LT, CompareFilter.CompareOp.LESS);
+//		constantOperator.put(Operator.GT, CompareFilter.CompareOp.GREATER);
+//		constantOperator.put(Operator.LE, CompareFilter.CompareOp.LESS_OR_EQUAL);
+//		constantOperator.put(Operator.GE, CompareFilter.CompareOp.GREATER_OR_EQUAL);
 	}
 	
 	
@@ -40,10 +50,14 @@ public class ComparisonOperatorMapper {
 		case DynamoDb:
 			return wordOperators.get(operator);
 		case Hbase:
+//			return constantOperator.get(operator);
 		case Hypertable:
 			return charOperator.get(operator);
 		}
 		
 		return "";
 	}
+//	public static CompareFilter.CompareOp mapConditionalOperatorHBase(Operator operator) {
+//		return constantOperator.get(operator);
+//	}
 }

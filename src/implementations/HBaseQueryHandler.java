@@ -14,13 +14,16 @@ import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.MasterNotRunningException;
-import org.apache.hadoop.hbase.NamespaceDescriptor;
 import org.apache.hadoop.hbase.ZooKeeperConnectionException;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.filter.FilterList;
+import org.apache.hadoop.hbase.filter.FilterList.Operator;
+import org.apache.hadoop.hbase.filter.SingleColumnValueFilter;
 import org.apache.hadoop.hbase.util.Bytes;
 
 public class HBaseQueryHandler {
@@ -28,15 +31,17 @@ public class HBaseQueryHandler {
 	public static void createNamespace(String namespaceName) {
 		try {
 			HBaseAdmin hbaseAdmin = new HBaseAdmin(HBaseHandler.config);
+			hbaseAdmin.close();
 		} catch (MasterNotRunningException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ZooKeeperConnectionException e) {
+			e.printStackTrace();
+		}
+//		NamespaceDescriptor namespace = NamespaceDescriptor.create(namespaceName).build();
+		catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		NamespaceDescriptor namespace = NamespaceDescriptor.create(namespaceName).build();
-		
 	}
 
 	/**
@@ -53,14 +58,12 @@ public class HBaseQueryHandler {
 			HColumnDescriptor columnDesc = new HColumnDescriptor(primaryKey);
 			desc.addFamily(columnDesc);
 			hbaseAdmin.createTable(desc);
+			hbaseAdmin.close();
 		} catch (MasterNotRunningException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ZooKeeperConnectionException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -76,13 +79,10 @@ public class HBaseQueryHandler {
 //			desc.addFamily(columnDesc);
 			hbaseAdmin.addColumn(tableName, columnDesc);
 		} catch (MasterNotRunningException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ZooKeeperConnectionException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -97,14 +97,12 @@ public class HBaseQueryHandler {
 			for (HTableDescriptor table : tables) {
 				result.add(table.getNameAsString());
 			}
+			hbaseAdmin.close();
 		} catch (MasterNotRunningException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ZooKeeperConnectionException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return result;
@@ -116,13 +114,10 @@ public class HBaseQueryHandler {
 			hbaseAdmin = new HBaseAdmin(HBaseHandler.config);
 			hbaseAdmin.deleteTable(tableName);
 		} catch (MasterNotRunningException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ZooKeeperConnectionException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -141,17 +136,17 @@ public class HBaseQueryHandler {
 					
 				}
 				table.put(p);
+				hbaseAdmin.close();
+				table.close();
 			}			
 		} catch (MasterNotRunningException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ZooKeeperConnectionException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 		
 	}
 
@@ -169,14 +164,13 @@ public class HBaseQueryHandler {
 			for (KeyValue kv : kvs) {
 				attributes.add(new Attribute(new String(kv.getRow()), new String(kv.getValue())));
 			}
+			table.close();
+			hbaseAdmin.close();
 		} catch (MasterNotRunningException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ZooKeeperConnectionException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return new Row(attributes);
@@ -184,8 +178,30 @@ public class HBaseQueryHandler {
 
 	public static List<Row> scanTable(String tableName, Filter[] filters,
 			String conditionalOperator) {
-		// TODO Auto-generated method stub
-		return null;
+		HTable table;
+		try {
+			table = new HTable(HBaseHandler.config, tableName);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		List<Row> results = new ArrayList<Row>();
+		Scan scanner =  new Scan();
+		FilterList hbaseFilters;
+		if (conditionalOperator.equals("AND")) {
+			hbaseFilters = new FilterList(Operator.MUST_PASS_ALL);	
+		} else {
+			hbaseFilters = new FilterList(Operator.MUST_PASS_ONE);	
+		}
+		
+		for(Filter filter: filters) {
+			SingleColumnValueFilter columnFilter = new SingleColumnValueFilter();
+			// a column family has to be provided...How to solve?
+			//TODO
+			hbaseFilters.addFilter(columnFilter);
+			
+		}
+		scanner.setFilter(hbaseFilters);
+		return results;
 	}
 
 }
