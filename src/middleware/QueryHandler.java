@@ -2,6 +2,7 @@ package middleware;
 
 import implementations.CassandraQueryHandler;
 import implementations.DynamoDbQueryHandler;
+import implementations.HBaseQueryHandler;
 import implementations.HypertableQueryHandler;
 import interfaces.MiddlewareInterface;
 
@@ -32,6 +33,7 @@ public void alterTableAddColumn(String tableName, String columnName) {
 		case DynamoDb:
 			break;
 		case Hbase:
+			HBaseQueryHandler.alterTableAddColumnFamily(tableName, columnName);
 			break;
 		case Hypertable:
 			HypertableQueryHandler.alterTableAddColumn(tableName, columnName);
@@ -48,6 +50,8 @@ public void alterTableAddColumn(String tableName, String columnName) {
 		case DynamoDb:
 			break;
 		case Hbase:
+			// Not supported in 0.94.21 version
+			//HBaseQueryHandler.createNamespace(namespaceName);
 			break;
 		case Hypertable:
 			HypertableQueryHandler.createNamespace(namespaceName);
@@ -65,6 +69,7 @@ public void alterTableAddColumn(String tableName, String columnName) {
 			DynamoDbQueryHandler.createTable(tableName, primaryKey);
 			break;
 		case Hbase:
+			HBaseQueryHandler.createTable(tableName, primaryKey);
 			break;
 		case Hypertable:
 			HypertableQueryHandler.createTable(tableName, primaryKey);
@@ -81,7 +86,7 @@ public void alterTableAddColumn(String tableName, String columnName) {
 			ListTablesResult result = DynamoDbQueryHandler.listTables();
 			return result.getTableNames();
 		case Hbase:
-			break;
+			return HBaseQueryHandler.getTableNames();
 		case Hypertable:
 			return HypertableQueryHandler.listTables();
 		}
@@ -99,6 +104,7 @@ public void alterTableAddColumn(String tableName, String columnName) {
 				DynamoDbQueryHandler.deleteTable(tableName);
 				break;
 			case Hbase:
+				HBaseQueryHandler.deleteTable(tableName);
 				break;
 			case Hypertable:
 				HypertableQueryHandler.deleteTable(tableName);
@@ -120,6 +126,7 @@ public void alterTableAddColumn(String tableName, String columnName) {
 			DynamoDbQueryHandler.insertItems(tableName, items);
 			break;
 		case Hbase:
+			HBaseQueryHandler.insertItems(tableName, items);
 			break;
 		case Hypertable:
 			HypertableQueryHandler.insertItems(tableName, items);
@@ -135,7 +142,7 @@ public void alterTableAddColumn(String tableName, String columnName) {
 		case DynamoDb:
 			return DynamoDbQueryHandler.getRowByKey(tableName, combinedKey);
 		case Hbase:
-			break;
+			return HBaseQueryHandler.getRowByKey(tableName, combinedKey);
 		case Hypertable:
 			return HypertableQueryHandler.getRowByKey(tableName, combinedKey[0].getValue());
 		}
@@ -167,7 +174,7 @@ public void alterTableAddColumn(String tableName, String columnName) {
 		case DynamoDb:
 			return DynamoDbQueryHandler.scanTable(tableName, filters, conditionalOperator);
 		case Hbase:
-			break;
+			return HBaseQueryHandler.scanTable(tableName, filters, conditionalOperator);
 		case Hypertable:
 			return HypertableQueryHandler.scanTable(tableName, conditionalOperator, filters);
 		}
