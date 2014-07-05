@@ -34,30 +34,27 @@ public class ComparisonOperatorMapper {
 		charOperator.put(ComparisonOperator.LE, "<=");
 		charOperator.put(ComparisonOperator.GE, ">=");
 		
-//		constantOperator.put(Operator.EQ, CompareFilter.CompareOp.EQUAL);
-//		constantOperator.put(Operator.NE, CompareFilter.CompareOp.NOT_EQUAL);
-//		constantOperator.put(Operator.LT, CompareFilter.CompareOp.LESS);
-//		constantOperator.put(Operator.GT, CompareFilter.CompareOp.GREATER);
-//		constantOperator.put(Operator.LE, CompareFilter.CompareOp.LESS_OR_EQUAL);
-//		constantOperator.put(Operator.GE, CompareFilter.CompareOp.GREATER_OR_EQUAL);
+		constantOperator.put(ComparisonOperator.EQ, CompareFilter.CompareOp.EQUAL);
+		constantOperator.put(ComparisonOperator.NE, CompareFilter.CompareOp.NOT_EQUAL);
+		constantOperator.put(ComparisonOperator.LT, CompareFilter.CompareOp.LESS);
+		constantOperator.put(ComparisonOperator.GT, CompareFilter.CompareOp.GREATER);
+		constantOperator.put(ComparisonOperator.LE, CompareFilter.CompareOp.LESS_OR_EQUAL);
+		constantOperator.put(ComparisonOperator.GE, CompareFilter.CompareOp.GREATER_OR_EQUAL);
 	}
 	
 	
-	public static String mapConditionalOperator(ComparisonOperator operator){
+	public static Object mapConditionalOperator(ComparisonOperator operator){
 		switch (NoSQLMiddleware.getUsedDatabase()) {
 		case Cassandra:
 			return wordOperators.get(operator);
 		case DynamoDb:
 			return wordOperators.get(operator);
 		case Hbase:
-//			return constantOperator.get(operator);
+			return constantOperator.get(operator);
 		case Hypertable:
 			return charOperator.get(operator);
 		}
 		
 		return "";
 	}
-//	public static CompareFilter.CompareOp mapConditionalOperatorHBase(Operator operator) {
-//		return constantOperator.get(operator);
-//	}
 }

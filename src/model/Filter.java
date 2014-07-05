@@ -1,15 +1,18 @@
 package model;
 
+import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
+
 import middleware.ComparisonOperatorMapper;
 import middleware.ComparisonOperatorMapper.ComparisonOperator;
 
 public class Filter {
 	private Attribute attribute;
-	private String comparisonOperator;
+	private Object comparisonOperator;
 
 	public Filter(Attribute attribute, ComparisonOperator comparisonOperator) {
 		super();
 		this.attribute = attribute;
+		
 		this.comparisonOperator = ComparisonOperatorMapper.mapConditionalOperator(comparisonOperator);
 	}
 
@@ -21,11 +24,11 @@ public class Filter {
 		this.attribute = attribute;
 	}
 
-	public String getComparisonOperator() {
-		return comparisonOperator;
+	public CompareOp getComparisonOperatorAsHbaseCompareOperator() {
+		return (CompareOp) comparisonOperator;
 	}
-
-	public void setComparisonOperator(String comparisonOperator) {
-		this.comparisonOperator = comparisonOperator;
+	
+	public String getComparisonOperator(){
+		return (String) comparisonOperator;
 	}
 }
