@@ -70,7 +70,7 @@ public class CassandraQueryHandler {
 	
 	public static void createTable(String tableName, String primaryKey) {
 		String query = "CREATE TABLE IF NOT EXISTS "+tableName+" (";
-		query += primaryKey+" int PRIMARY KEY);";
+		query += primaryKey+" text PRIMARY KEY);";
 		CassandraHandler.session.execute(query);
 	}
 	
@@ -90,6 +90,8 @@ public class CassandraQueryHandler {
 	}
 	public static void alterTableAddColumn(String tableName, String column) {
 		alterTable(tableName, " ADD "+column+" text");
+		String query = "CREATE INDEX ON "+tableName+"("+column+");";
+		CassandraHandler.session.execute(query);
 	}
 	
 	/**
@@ -136,7 +138,7 @@ public class CassandraQueryHandler {
 			query += " "+attribute.getName()+",";
 		}
 		query = query.substring(0, query.length()-1);
-		query += ") VALUES ("+item.getKey().getValue()+", ";
+		query += ") VALUES ('"+item.getKey().getValue()+"', ";
 		for (Attribute attribute : attributes) {
 			query += " '"+attribute.getValue()+"',";
 		}
@@ -151,7 +153,7 @@ public class CassandraQueryHandler {
 		query += " FROM "+tableName;
 		query += " WHERE ";
 		for(Key key : keys) {
-			query += key.getName()+" = "+key.getValue()+" AND ";
+			query += key.getName()+" = '"+key.getValue()+"' AND ";
 		}
 		query = query.substring(0, query.length()-4);
 		
@@ -162,7 +164,7 @@ public class CassandraQueryHandler {
 		List<Attribute> attributes = new ArrayList<Attribute>();
 		
 		ColumnDefinitions.Definition definition = columns.get(0);
-		Key key = new Key(definition.getName(), String.valueOf(row.getInt(definition.getName())));
+		Key key = new Key(definition.getName(), row.getString(definition.getName()));
 		columns.remove(0);
 		
 		for(ColumnDefinitions.Definition def: columns) {
@@ -174,18 +176,37 @@ public class CassandraQueryHandler {
 	}
 	
 	public static List<model.Row> scanTable(String tableName, String conditionalOperator, Filter... filters) {
-		String query = "SELECT * FROM " + tableName + " WHERE ";
-		for (Filter filter : filters) {
-			query += filter.getAttribute().getName()+" "+filter.getComparisonOperator()+" '"+filter.getAttribute().getValue()+"'";
-			query += " "+conditionalOperator+" ";
+		String query;
+		ResultSet resultsFromDB;
+		List<Row> rows = new ArrayList<Row>();
+		if (conditionalOperator.equals("OR")) {
+			query = "SELECT * FROM " + tableName + ";";
+			List<Row> allResults = CassandraHandler.session.execute(query).all();
+			for (Row row : allResults) {
+				for (Filter filter: filters) {
+					if (row.getString(filter.getAttribute().getName()) != null ) {
+						if (isSelectedRow(row,filter)) {
+							rows.add(row);
+							break;
+						}
+					}
+				}
+				
+			}
+
+		} else {
+			query = "SELECT * FROM " + tableName + " WHERE ";
+			for (Filter filter : filters) {
+				query += filter.getAttribute().getName()+" "+filter.getComparisonOperator()+" '"+filter.getAttribute().getValue()+"'";
+				query += " "+conditionalOperator+" ";
+			}
+			query = query.substring(0, query.length()-conditionalOperator.length()-1);
+			query += " ALLOW FILTERING;";
+			System.out.println(query);
+			resultsFromDB = CassandraHandler.session.execute(query);
+			rows = resultsFromDB.all();
 		}
-		query = query.substring(0, query.length()-conditionalOperator.length()-1);
-		query += ";";
-		System.out.println(query);
-		ResultSet resultsFromDB = CassandraHandler.session.execute(query);
-		List<Row> rows = resultsFromDB.all();
 		List<ColumnDefinitions.Definition> columns = rows.get(0).getColumnDefinitions().asList();
-		
 		List<model.Row> result = new ArrayList<model.Row>();
 		for(Row row : rows) {
 			List<Attribute> attributes = new ArrayList<Attribute>();
@@ -196,5 +217,27 @@ public class CassandraQueryHandler {
 			result.add(new model.Row(attributes));
 		}
 		return result;
+	}
+	
+	private static boolean isSelectedRow(Row row, Filter filter) {
+		if (row.getString(filter.getAttribute().getName()) == null) return false; 
+		String columnValue = row.getString(filter.getAttribute().getName());
+		String filterValue = filter.getAttribute().getValue();
+		switch (filter.getComparisonOperator()) {
+			case "=":
+				return (columnValue.equals(filterValue));
+			case "!=":
+				return !(columnValue.equals(filterValue));
+			case "<":
+				return (columnValue.compareTo(filterValue) < 0);
+			case ">":
+				return (columnValue.compareTo(filterValue) > 0);
+			case "<=":
+				return (columnValue.compareTo(filterValue) <= 0);
+			case ">=":
+				return (columnValue.compareTo(filterValue) >= 0);	
+			default:
+				return false;
+		}
 	}
 }
