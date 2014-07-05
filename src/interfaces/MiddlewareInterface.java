@@ -29,6 +29,7 @@ public interface MiddlewareInterface {
 	 */
 	public void insertRows(String tableName, List<Row> rows);
 	public Row getRowByKey(String tableName, Key... combinedKey);
+	@Deprecated
 	public List<Row> getRowsByKeys(Map<String, ArrayList<Map<String, String>>> tableNamesWithKeys);
 	public List<Row> getRows(String tableName, String conditionalOperator, Filter... filters);
 	public List<String> getTableNames();
