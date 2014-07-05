@@ -5,31 +5,11 @@ import java.util.List;
 import middleware.ComparisonOperatorMapper.ComparisonOperator;
 import model.Attribute;
 import model.Filter;
-import model.Key;
 import model.Row;
 
 import org.junit.Test;
 
-public class HbaseTest {
-	@Test
-	public void createTableTest() {
-		TestHandler.deleteTestTables();
-		assertEquals(0, TestHandler.getTestTableNames(TestHandler.queryHandler.getTableNames()).size());
-		TestHandler.createTestTables();
-		assertEquals(2, TestHandler.getTestTableNames(TestHandler.queryHandler.getTableNames()).size());
-	}
-
-	@Test
-	public void getRowByKeyTest() {
-		TestHandler.deleteTestTables(); 
-		TestHandler.createTestTables();
-		TestHandler.insertTestItems(TestHandler.TABLE_NAME);
-
-		Row row = TestHandler.queryHandler.getRowByKey(TestHandler.TABLE_NAME, new Key("id", "2"));
-		
-		assertEquals("Bowser", row.getAttributesMap().get("name").getValue());
-		assertEquals(true, row.getAttributesMap().containsKey("type"));
-	}
+public class HbaseTest extends ImplementationBaseTest {
 	
 	@Test
 	public void selectTest(){

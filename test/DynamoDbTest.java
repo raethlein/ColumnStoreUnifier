@@ -5,69 +5,49 @@ import java.util.List;
 import middleware.ComparisonOperatorMapper.ComparisonOperator;
 import model.Attribute;
 import model.Filter;
-import model.Key;
 import model.Row;
 
 import org.junit.Test;
 
 
-public class DynamoDbTest {
+public class DynamoDbTest extends ImplementationBaseTest{
 
-	@Test
-	public void createTableTest() {
-		TestHandler.deleteTestTables();
-		assertEquals(0, TestHandler.getTestTableNames(TestHandler.queryHandler.getTableNames()).size());
-		TestHandler.createTestTables();
-		assertEquals(2, TestHandler.getTestTableNames(TestHandler.queryHandler.getTableNames()).size());
-	}
-
-	@Test
-	public void getRowByKeyTest() {
-		TestHandler.deleteTestTables();
-		TestHandler.createTestTables();
-		TestHandler.insertTestItems(TestHandler.TABLE_NAME);
-
-		Row item = TestHandler.queryHandler.getRowByKey(TestHandler.TABLE_NAME, new Key("id", "2"));
-		assertEquals("Bowser", item.getAttributesMap().get("name").getValue());
-		assertEquals(true, item.getAttributesMap().containsKey("type"));
-	}
-
-	@Test
-	public void getBatchItemTest() {
-		TestHandler.deleteTestTables();
-		TestHandler.createTestTables();
-		TestHandler.insertTestItems(TestHandler.TABLE_NAME);
-		TestHandler.insertTestItems(TestHandler.TABLE_NAME2);
-		List<Row> items = TestHandler.queryHandler.getRowsByKeys(TestHandler.createKeys());
-		
-		assertEquals(4, items.size());		
-		boolean mario = false;
-		boolean link = false;
-		boolean bowser = false;
-		boolean ganondorf = false;
-		
-		for(Row item : items){
-			if(item.getAttributesMap().get("name").getValue().equals("Mario")){
-				assertEquals(false, item.getAttributesMap().containsKey("type"));
-				mario = true;
-			}
-			else if(item.getAttributesMap().get("name").getValue().equals("Link")){
-				assertEquals("hero of time", item.getAttributesMap().get("status").getValue());
-				link = true;
-			}
-			else if(item.getAttributesMap().get("name").getValue().equals("Bowser")){
-				assertEquals(true, item.getAttributesMap().containsKey("type"));
-				bowser = true;
-			}
-			else if(item.getAttributesMap().get("name").getValue().equals("Ganondorf")){
-				assertEquals(true, item.getAttributesMap().containsKey("alias"));
-				assertEquals("200", item.getAttributesMap().get("id").getValue());		
-				ganondorf = true;
-			}
-		}
-		
-		assertEquals(true, mario && link && bowser && ganondorf);
-	}
+//	@Test
+//	public void getBatchItemTest() {
+//		TestHandler.deleteTestTables();
+//		TestHandler.createTestTables();
+//		TestHandler.insertTestItems(TestHandler.TABLE_NAME);
+//		TestHandler.insertTestItems(TestHandler.TABLE_NAME2);
+//		List<Row> items = TestHandler.queryHandler.getRowsByKeys(TestHandler.createKeys());
+//		
+//		assertEquals(4, items.size());		
+//		boolean mario = false;
+//		boolean link = false;
+//		boolean bowser = false;
+//		boolean ganondorf = false;
+//		
+//		for(Row item : items){
+//			if(item.getAttributesMap().get("name").getValue().equals("Mario")){
+//				assertEquals(false, item.getAttributesMap().containsKey("type"));
+//				mario = true;
+//			}
+//			else if(item.getAttributesMap().get("name").getValue().equals("Link")){
+//				assertEquals("hero of time", item.getAttributesMap().get("status").getValue());
+//				link = true;
+//			}
+//			else if(item.getAttributesMap().get("name").getValue().equals("Bowser")){
+//				assertEquals(true, item.getAttributesMap().containsKey("type"));
+//				bowser = true;
+//			}
+//			else if(item.getAttributesMap().get("name").getValue().equals("Ganondorf")){
+//				assertEquals(true, item.getAttributesMap().containsKey("alias"));
+//				assertEquals("200", item.getAttributesMap().get("id").getValue());		
+//				ganondorf = true;
+//			}
+//		}
+//		
+//		assertEquals(true, mario && link && bowser && ganondorf);
+//	}
 	
 	@Test
 	public void scanTest(){

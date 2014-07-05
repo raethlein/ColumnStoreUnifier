@@ -5,34 +5,12 @@ import java.util.List;
 import middleware.ComparisonOperatorMapper.ComparisonOperator;
 import model.Attribute;
 import model.Filter;
-import model.Key;
 import model.Row;
 
 import org.junit.Test;
 
 
-public class CassandraTest {
-
-	@Test
-	public void createTableTest() {
-		TestHandler.deleteTestTables();
-		assertEquals(0, TestHandler.getTestTableNames(TestHandler.queryHandler.getTableNames()).size());
-		TestHandler.createTestTables();
-		assertEquals(2, TestHandler.getTestTableNames(TestHandler.queryHandler.getTableNames()).size());
-	}
-	
-	@Test
-	public void getItemTest() {
-		TestHandler.deleteTestTables();
-		TestHandler.createTestTables();
-		TestHandler.insertTestItems(TestHandler.TABLE_NAME);
-
-		Key key = new Key("id", "2");
-
-		Row item = TestHandler.queryHandler.getRowByKey(TestHandler.TABLE_NAME, key);
-		assertEquals("Bowser", item.getAttributesMap().get("name").getValue());
-		assertEquals(true, item.getAttributesMap().containsKey("type"));
-	}
+public class CassandraTest extends ImplementationBaseTest{
 	
 	@Test
 	public void scanTest(){
