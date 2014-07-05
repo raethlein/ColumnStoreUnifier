@@ -200,7 +200,7 @@ public class HypertableQueryHandler {
 								} else {
 									numberOfPassedFilters++;
 								}
-							}	
+							}
 						}
 					}
 					if (conditionalOperator.equals("OR")) {
@@ -213,9 +213,9 @@ public class HypertableQueryHandler {
 						if (numberOfPassedFilters != filterList.size()) {
 							passesCheck = false;
 						}
-					}
-					if (numberOfFittingColumns < filterList.size()) {
-						passesCheck = false;
+						if (numberOfFittingColumns < filterList.size()) {
+							passesCheck = false;
+						}
 					}
 					if (passesCheck) {
 						transformedResultList.add(new Row(attributes));

@@ -1,11 +1,10 @@
 import interfaces.MiddlewareInterface;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import middleware.NoSQLMiddleware;
+import middleware.NoSQLMiddleware.Implementations;
 import model.Attribute;
 import model.Key;
 import model.Row;
@@ -15,8 +14,13 @@ public class TestHandler {
 	public static String TABLE_NAME = "test_mushroom_kingdom";
 	public static String TABLE_NAME2 = "test_hyrule";
 	public static String INDEX = "id";
-	public static MiddlewareInterface queryHandler = NoSQLMiddleware
-			.getQueryHandler();
+	public static MiddlewareInterface queryHandler;
+
+	public static void initTest(Implementations database, String databaseHost,
+			String databasePort) {
+		queryHandler = NoSQLMiddleware.getQueryHandler(database, databaseHost,
+				databasePort);
+	}
 
 	public static void insertTestItems(String tableName) {
 		List<Row> items = new ArrayList<>();
@@ -94,30 +98,6 @@ public class TestHandler {
 		}
 
 		return testTableNames;
-	}
-
-	public static Map<String, ArrayList<Map<String, String>>> createKeys() {
-		Map<String, ArrayList<Map<String, String>>> tableNamesWithKeys = new HashMap<>();
-		ArrayList<Map<String, String>> keyList = new ArrayList<>();
-
-		Map<String, String> keys = new HashMap<>();
-		keys.put("id", "1");
-		keyList.add(keys);
-
-		keys = new HashMap<>();
-		keys.put("id", "2");
-		keyList.add(keys);
-		tableNamesWithKeys.put(TestHandler.TABLE_NAME, keyList);
-
-		keys = new HashMap<>();
-		keys.put("id", "100");
-		keyList.add(keys);
-
-		keys = new HashMap<>();
-		keys.put("id", "200");
-		keyList.add(keys);
-		tableNamesWithKeys.put(TestHandler.TABLE_NAME2, keyList);
-		return tableNamesWithKeys;
 	}
 
 	public static void printRows(List<Row> rows) {
