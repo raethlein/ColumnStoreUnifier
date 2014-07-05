@@ -2,15 +2,13 @@ package implementations;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import model.Attribute;
 import model.Filter;
-import model.Row;
 import model.Key;
+import model.Row;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
@@ -150,6 +148,7 @@ public class DynamoDbQueryHandler {
 	 * @param combinedKey
 	 * @return
 	 */
+	@Deprecated
 	public static List<Row> getItemsByKeys(
 			Map<String, ArrayList<Map<String, String>>> tableNamesWithKeys) {
 		HashMap<String, KeysAndAttributes> requestItems = new HashMap<String, KeysAndAttributes>();

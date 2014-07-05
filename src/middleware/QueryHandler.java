@@ -152,6 +152,7 @@ public void alterTableAddColumn(String tableName, String columnName) {
 
 	//TODO: allow select only from one table and not set of tables
 	@Override
+	@Deprecated
 	public List<Row> getRowsByKeys(Map<String, ArrayList<Map<String, String>>> tableNamesWithKeys) {
 		switch (NoSQLMiddleware.getUsedDatabase()) {
 		case Cassandra:
