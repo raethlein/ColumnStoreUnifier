@@ -26,7 +26,7 @@ import com.amazonaws.services.dynamodbv2.model.ListTablesResult;
 public class QueryHandler implements MiddlewareInterface {
 
 public void alterTableAddColumn(String tableName, String columnName) {
-		switch (Configurator.getUsedDatabase()) {
+		switch (NoSQLMiddleware.getUsedDatabase()) {
 		case Cassandra:
 			CassandraQueryHandler.alterTableAddColumn(tableName, columnName);
 			break;
@@ -43,7 +43,7 @@ public void alterTableAddColumn(String tableName, String columnName) {
 	
 	@Override
 	public void createNamespace(String namespaceName){
-		switch (Configurator.getUsedDatabase()) {
+		switch (NoSQLMiddleware.getUsedDatabase()) {
 		case Cassandra:
 			CassandraQueryHandler.createKeyspace(namespaceName);
 			break;
@@ -61,7 +61,7 @@ public void alterTableAddColumn(String tableName, String columnName) {
 
 	@Override
 	public void createTable(String tableName, String primaryKey) {
-		switch (Configurator.getUsedDatabase()) {
+		switch (NoSQLMiddleware.getUsedDatabase()) {
 		case Cassandra:
 			CassandraQueryHandler.createTable(tableName, primaryKey);
 			break;
@@ -79,7 +79,7 @@ public void alterTableAddColumn(String tableName, String columnName) {
 
 	@Override
 	public List<String> getTableNames() {
-		switch (Configurator.getUsedDatabase()) {
+		switch (NoSQLMiddleware.getUsedDatabase()) {
 		case Cassandra:
 			return CassandraQueryHandler.getTableNames();
 		case DynamoDb:
@@ -96,7 +96,7 @@ public void alterTableAddColumn(String tableName, String columnName) {
 	@Override
 	public void deleteTable(String tableName) {
 		try {
-			switch (Configurator.getUsedDatabase()) {
+			switch (NoSQLMiddleware.getUsedDatabase()) {
 			case Cassandra:
 				CassandraQueryHandler.deleteTable(tableName);
 				break;
@@ -118,7 +118,7 @@ public void alterTableAddColumn(String tableName, String columnName) {
 
 	@Override
 	public void insertRows(String tableName, List<Row> items) {
-		switch (Configurator.getUsedDatabase()) {
+		switch (NoSQLMiddleware.getUsedDatabase()) {
 		case Cassandra:
 			CassandraQueryHandler.insertItems(tableName, items);
 			break;
@@ -136,7 +136,7 @@ public void alterTableAddColumn(String tableName, String columnName) {
 
 	@Override
 	public Row getRowByKey(String tableName, Key... combinedKey) {
-		switch (Configurator.getUsedDatabase()) {
+		switch (NoSQLMiddleware.getUsedDatabase()) {
 		case Cassandra:
 			return CassandraQueryHandler.getRowByKey(tableName, combinedKey);
 		case DynamoDb:
@@ -153,7 +153,7 @@ public void alterTableAddColumn(String tableName, String columnName) {
 	//TODO: allow select only from one table and not set of tables
 	@Override
 	public List<Row> getRowsByKeys(Map<String, ArrayList<Map<String, String>>> tableNamesWithKeys) {
-		switch (Configurator.getUsedDatabase()) {
+		switch (NoSQLMiddleware.getUsedDatabase()) {
 		case Cassandra:
 			break;
 		case DynamoDb:
@@ -168,7 +168,7 @@ public void alterTableAddColumn(String tableName, String columnName) {
 
 	@Override
 	public List<Row> getRows(String tableName, String conditionalOperator, Filter... filters) {
-		switch (Configurator.getUsedDatabase()) {
+		switch (NoSQLMiddleware.getUsedDatabase()) {
 		case Cassandra:
 			return CassandraQueryHandler.scanTable(tableName, conditionalOperator, filters);
 		case DynamoDb:

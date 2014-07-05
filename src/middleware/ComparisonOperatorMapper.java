@@ -44,7 +44,7 @@ public class ComparisonOperatorMapper {
 	
 	
 	public static String mapConditionalOperator(Operator operator){
-		switch (Configurator.getUsedDatabase()) {
+		switch (NoSQLMiddleware.getUsedDatabase()) {
 		case Cassandra:
 			return wordOperators.get(operator);
 		case DynamoDb:

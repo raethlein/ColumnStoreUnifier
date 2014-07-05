@@ -9,7 +9,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 
-public class Configurator {
+public class NoSQLMiddleware {
 
 	private static String database;
 	private static String databaseHost;
@@ -23,8 +23,20 @@ public class Configurator {
 		Hbase,
 		Hypertable
 	}
+	
+	private static QueryHandler queryHandler;
 
-	public static void init() {
+	public synchronized static QueryHandler getQueryHandler() {
+		if (queryHandler == null) {
+			init();
+			ComparisonOperatorMapper.initConditionalOperatorMapper();
+			queryHandler = new QueryHandler();
+		}
+		
+		return queryHandler;
+	}
+
+	private static void init() {
 		InputStream input = null;
 		Properties properties = new Properties();
 
@@ -62,7 +74,7 @@ public class Configurator {
 	}
 
 	public static void setDatabase(String database) {
-		Configurator.database = database;
+		NoSQLMiddleware.database = database;
 	}
 
 	public static Implementations getUsedDatabase() {
@@ -70,7 +82,7 @@ public class Configurator {
 	}
 
 	public static void setUsedDatabase(Implementations usedDatabase) {
-		Configurator.usedDatabase = usedDatabase;
+		NoSQLMiddleware.usedDatabase = usedDatabase;
 	}
 
 }
