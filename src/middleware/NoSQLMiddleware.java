@@ -3,6 +3,7 @@ import implementations.CassandraHandler;
 import implementations.DynamoDbHandler;
 import implementations.HBaseHandler;
 import implementations.HypertableHandler;
+import interfaces.MiddlewareInterface;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -25,6 +26,8 @@ public class NoSQLMiddleware {
 		Hypertable
 	}
 	
+	private static MiddlewareInterface databaseHandler;
+	
 	private static QueryHandler queryHandler;
 
 	public synchronized static QueryHandler getQueryHandler() {
@@ -37,6 +40,10 @@ public class NoSQLMiddleware {
 		return queryHandler;
 	}
 
+	public static MiddlewareInterface getImplementationHandler() {
+		return databaseHandler;
+	}
+	
 	private static void init() {
 		InputStream input = null;
 		Properties properties = new Properties();
@@ -64,7 +71,10 @@ public class NoSQLMiddleware {
 				break;
 			case "Cassandra":
 				setUsedDatabase(Implementations.Cassandra);
-				CassandraHandler.connectToDatabase(databaseHost);
+//				CassandraHandler.connectToDatabase(databaseHost);
+				CassandraHandler handler = new CassandraHandler();
+				handler.connectToDatabase(databaseHost, databasePort);
+				databaseHandler = handler;
 				break;
 			}
 
