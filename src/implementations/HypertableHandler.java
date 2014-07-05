@@ -17,7 +17,7 @@ public class HypertableHandler implements MiddlewareInterface {
 	public static ThriftClient CLIENT;
 	public static long NAMESPACE;
 	
-	public static void connectToDatabase(String host, String port){
+	public void connectToDatabase(String host, String port){
 		try {
 			CLIENT = ThriftClient.create(host, Integer.parseInt(port));
 			NAMESPACE = CLIENT.namespace_open("test");

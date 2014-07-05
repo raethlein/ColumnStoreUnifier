@@ -1,10 +1,11 @@
+import interfaces.MiddlewareInterface;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import middleware.NoSQLMiddleware;
-import middleware.QueryHandler;
 import model.Attribute;
 import model.Key;
 import model.Row;
@@ -14,7 +15,7 @@ public class TestHandler {
 	public static String TABLE_NAME = "test_mushroom_kingdom";
 	public static String TABLE_NAME2 = "test_hyrule";
 	public static String INDEX = "id";
-	public static QueryHandler queryHandler = NoSQLMiddleware
+	public static MiddlewareInterface queryHandler = NoSQLMiddleware
 			.getQueryHandler();
 
 	public static void insertTestItems(String tableName) {

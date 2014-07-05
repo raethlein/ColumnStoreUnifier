@@ -22,6 +22,11 @@ public class DynamoDbHandler implements MiddlewareInterface {
 	public static void connectToDatabase(String address){
 		CLIENT.setEndpoint(address);
 	}
+	
+	@Override
+	public void connectToDatabase(String databaseHost, String databasePort) {		
+	}
+
 
 	@Override
 	public void alterTableAddColumn(String tableName, String columnName) {
@@ -54,6 +59,7 @@ public class DynamoDbHandler implements MiddlewareInterface {
 	}
 
 	@Override
+	@Deprecated
 	public List<Row> getRowsByKeys(
 			Map<String, ArrayList<Map<String, String>>> tableNamesWithKeys) {
 		return DynamoDbQueryHandler.getItemsByKeys(tableNamesWithKeys);

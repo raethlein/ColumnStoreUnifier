@@ -26,22 +26,38 @@ public class NoSQLMiddleware {
 		Hypertable
 	}
 	
-	private static MiddlewareInterface databaseHandler;
-	
-	private static QueryHandler queryHandler;
+	private static MiddlewareInterface queryHandler;
 
-	public synchronized static QueryHandler getQueryHandler() {
+	public synchronized static MiddlewareInterface getQueryHandler() {
 		if (queryHandler == null) {
 			init();
 			ComparisonOperatorMapper.initConditionalOperatorMapper();
-			queryHandler = new QueryHandler();
+			
+			switch (getDatabase()) {
+			case "DynamoDb":
+				setUsedDatabase(Implementations.DynamoDb);
+				DynamoDbHandler.connectToDatabase(databaseHost + ":" + databasePort);
+				queryHandler = new DynamoDbHandler();
+				break;
+			case "Hbase":
+				setUsedDatabase(Implementations.Hbase);
+				HBaseHandler.connect();
+				queryHandler = new HBaseHandler();
+				break;
+			case "Hypertable":
+				setUsedDatabase(Implementations.Hypertable);
+				queryHandler = new HypertableHandler();
+				queryHandler.connectToDatabase(databaseHost, databasePort);
+				break;
+			case "Cassandra":
+				setUsedDatabase(Implementations.Cassandra);
+				queryHandler = new CassandraHandler();
+				queryHandler.connectToDatabase(databaseHost, databasePort);
+				break;
+			}
 		}
 		
 		return queryHandler;
-	}
-
-	public static MiddlewareInterface getImplementationHandler() {
-		return databaseHandler;
 	}
 	
 	private static void init() {
@@ -55,28 +71,6 @@ public class NoSQLMiddleware {
 			setDatabase(properties.getProperty("database"));
 			databaseHost = properties.getProperty("databaseHost");
 			databasePort = properties.getProperty("databasePort");
-
-			switch (getDatabase()) {
-			case "DynamoDb":
-				setUsedDatabase(Implementations.DynamoDb);
-				DynamoDbHandler.connectToDatabase(databaseHost + ":" + databasePort);
-				break;
-			case "Hbase":
-				setUsedDatabase(Implementations.Hbase);
-				HBaseHandler.connect();
-				break;
-			case "Hypertable":
-				setUsedDatabase(Implementations.Hypertable);
-				HypertableHandler.connectToDatabase(databaseHost, databasePort);
-				break;
-			case "Cassandra":
-				setUsedDatabase(Implementations.Cassandra);
-//				CassandraHandler.connectToDatabase(databaseHost);
-				CassandraHandler handler = new CassandraHandler();
-				handler.connectToDatabase(databaseHost, databasePort);
-				databaseHandler = handler;
-				break;
-			}
 
 		}
 		catch (IOException ex) {

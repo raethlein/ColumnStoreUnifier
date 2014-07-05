@@ -10,6 +10,7 @@ import model.Row;
 
 
 public interface MiddlewareInterface {
+	public void connectToDatabase(String databaseHost, String databasePort);
 	
 	public void alterTableAddColumn(String tableName, String columnName);
 	

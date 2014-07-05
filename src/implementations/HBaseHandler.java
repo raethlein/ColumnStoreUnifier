@@ -17,6 +17,11 @@ public class HBaseHandler implements MiddlewareInterface{
 	public static void connect() {
 		config = HBaseConfiguration.create();
 	}
+	
+	@Override
+	public void connectToDatabase(String databaseHost, String databasePort) {		
+	}
+
 	@Override
 	public void alterTableAddColumn(String tableName, String columnName) {
 		HBaseQueryHandler.alterTableAddColumnFamily(tableName, columnName);
