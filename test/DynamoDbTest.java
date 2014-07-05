@@ -78,13 +78,11 @@ public class DynamoDbTest {
 		Filter[] filters = {new Filter(new Attribute("age", "24"), ComparisonOperator.GE)};
 		
 		List<Row> rows = TestHandler.queryHandler.getRows(TestHandler.TABLE_NAME, "OR", filters);
-		
-		assertEquals(3, rows.size());
+		TestHandler.printRows(rows);
+		assertEquals(2, rows.size());
 		assertEquals("Daisy", rows.get(0).getAttributesMap().get("name").getValue());
-		assertEquals("Peach", rows.get(1).getAttributesMap().get("name").getValue());
-		assertEquals(true, rows.get(1).getAttributesMap().containsKey("type"));
-		assertEquals("42", rows.get(2).getAttributesMap().get("age").getValue());
-		assertEquals("Yoshi", rows.get(2).getAttributesMap().get("name").getValue());
+		assertEquals("42", rows.get(1).getAttributesMap().get("age").getValue());
+		assertEquals("Yoshi", rows.get(1).getAttributesMap().get("name").getValue());
 		assertEquals(false, rows.get(1).getAttributesMap().containsKey("alias"));
 		
 		TestHandler.deleteTestTables();
@@ -98,6 +96,31 @@ public class DynamoDbTest {
 		
 		assertEquals(1, rows.size());
 		assertEquals("Daisy", rows.get(0).getAttributesMap().get("name").getValue());
+	}
+	
+	@Test
+	public void selectTest(){
+		TestHandler.deleteTestTables();
+		TestHandler.createTestTables();
+		TestHandler.insertTestItems(TestHandler.TABLE_NAME);
+
+		Filter[] filter = {new Filter(new Attribute("age", "23"),  ComparisonOperator.NE), 
+				new Filter(new Attribute("type", "princess"),  ComparisonOperator.NE), new Filter(new Attribute("name", "Peach"), ComparisonOperator.NE)};
+		
+		List<Row> rows = TestHandler.queryHandler.getRows(TestHandler.TABLE_NAME, "OR", filter);
+		TestHandler.printRows(rows);
+		assertEquals(4, rows.size());
+		assertEquals("Daisy", rows.get(1).getAttributesMap().get("name").getValue());
+		assertEquals("42", rows.get(2).getAttributesMap().get("age").getValue());
+		assertEquals("age", rows.get(2).getAttributesMap().get("age").getName());
+		
+		Filter[] filter2 = {new Filter(new Attribute("name", "Bowser"),  ComparisonOperator.EQ)};
+		
+		rows = TestHandler.queryHandler.getRows(TestHandler.TABLE_NAME, "OR", filter2);
+		System.out.println(rows.size());
+		TestHandler.printRows(rows);
+		assertEquals("Bowser", rows.get(0).getAttributesMap().get("name").getValue());
+		assertEquals("turtle", rows.get(0).getAttributesMap().get("type").getValue());
 	}
 
 }

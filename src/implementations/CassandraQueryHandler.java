@@ -176,7 +176,7 @@ public class CassandraQueryHandler {
 	public static List<model.Row> scanTable(String tableName, String conditionalOperator, Filter... filters) {
 		String query = "SELECT * FROM " + tableName + " WHERE ";
 		for (Filter filter : filters) {
-			query += filter.getAttribute().getName()+" "+filter.getComparisonOperator()+" "+filter.getAttribute().getValue();
+			query += filter.getAttribute().getName()+" "+filter.getComparisonOperator()+" '"+filter.getAttribute().getValue()+"'";
 			query += " "+conditionalOperator+" ";
 		}
 		query = query.substring(0, query.length()-conditionalOperator.length()-1);
@@ -191,6 +191,7 @@ public class CassandraQueryHandler {
 			List<Attribute> attributes = new ArrayList<Attribute>();
 			for (ColumnDefinitions.Definition def : columns) {
 				Attribute attribute = new Attribute(def.getName(), row.getString(def.getName()));
+				attributes.add(attribute);
 			}
 			result.add(new model.Row(attributes));
 		}

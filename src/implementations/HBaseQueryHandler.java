@@ -3,6 +3,7 @@ package implementations;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import model.Attribute;
@@ -20,10 +21,8 @@ import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
-import org.apache.hadoop.hbase.filter.FilterList;
-import org.apache.hadoop.hbase.filter.FilterList.Operator;
-import org.apache.hadoop.hbase.filter.SingleColumnValueFilter;
 import org.apache.hadoop.hbase.util.Bytes;
 
 public class HBaseQueryHandler {
@@ -37,7 +36,8 @@ public class HBaseQueryHandler {
 		} catch (ZooKeeperConnectionException e) {
 			e.printStackTrace();
 		}
-//		NamespaceDescriptor namespace = NamespaceDescriptor.create(namespaceName).build();
+		// NamespaceDescriptor namespace =
+		// NamespaceDescriptor.create(namespaceName).build();
 		catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -45,9 +45,11 @@ public class HBaseQueryHandler {
 	}
 
 	/**
-	 * The primary key will not be the primary key of the table. HBase itself defines a primary key column,
-	 * it is not possible to create another key column or a secondary index.
-	 * The primary key will be the first column family of the new table.
+	 * The primary key will not be the primary key of the table. HBase itself
+	 * defines a primary key column, it is not possible to create another key
+	 * column or a secondary index. The primary key will be the first column
+	 * family of the new table.
+	 * 
 	 * @param tableName
 	 * @param primaryKey
 	 */
@@ -66,7 +68,7 @@ public class HBaseQueryHandler {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	public static void alterTableAddColumnFamily(String tableName,
@@ -74,9 +76,9 @@ public class HBaseQueryHandler {
 		HBaseAdmin hbaseAdmin;
 		try {
 			hbaseAdmin = new HBaseAdmin(HBaseHandler.config);
-//			HTableDescriptor desc = new HTableDescriptor(tableName);
+			// HTableDescriptor desc = new HTableDescriptor(tableName);
 			HColumnDescriptor columnDesc = new HColumnDescriptor(columnName);
-//			desc.addFamily(columnDesc);
+			// desc.addFamily(columnDesc);
 			hbaseAdmin.addColumn(tableName, columnDesc);
 		} catch (MasterNotRunningException e) {
 			e.printStackTrace();
@@ -112,6 +114,7 @@ public class HBaseQueryHandler {
 		HBaseAdmin hbaseAdmin;
 		try {
 			hbaseAdmin = new HBaseAdmin(HBaseHandler.config);
+			hbaseAdmin.disableTable(tableName);
 			hbaseAdmin.deleteTable(tableName);
 		} catch (MasterNotRunningException e) {
 			e.printStackTrace();
@@ -120,7 +123,6 @@ public class HBaseQueryHandler {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
 	}
 
 	public static void insertItems(String tableName, List<Row> items) {
@@ -128,17 +130,20 @@ public class HBaseQueryHandler {
 		try {
 			hbaseAdmin = new HBaseAdmin(HBaseHandler.config);
 			HTable table = new HTable(HBaseHandler.config, tableName);
-			for (Row row: items) {
-				Put p = new Put(Bytes.toBytes(row.getKey().getValue()));
+			for (Row row : items) {
+				Put put = new Put(Bytes.toBytes(row.getKey().getValue()));
 				Collection<Attribute> attributes = row.getAttributes();
 				for (Attribute attribute : attributes) {
-					p.add(Bytes.toBytes(attribute.getColumnFamily()), Bytes.toBytes(attribute.getName()), Bytes.toBytes(attribute.getValue()));
-					
+					put.add(Bytes.toBytes(attribute.getColumnFamily()),
+							Bytes.toBytes(attribute.getName()),
+							Bytes.toBytes(attribute.getValue()));
+
 				}
-				table.put(p);
-				hbaseAdmin.close();
-				table.close();
-			}			
+				table.put(put);
+			}
+			table.flushCommits();
+			table.close();
+			hbaseAdmin.close();
 		} catch (MasterNotRunningException e) {
 			e.printStackTrace();
 		} catch (ZooKeeperConnectionException e) {
@@ -146,8 +151,7 @@ public class HBaseQueryHandler {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		
+
 	}
 
 	public static Row getRowByKey(String tableName, Key[] combinedKey) {
@@ -162,7 +166,8 @@ public class HBaseQueryHandler {
 			getResult = table.get(get);
 			List<KeyValue> kvs = getResult.list();
 			for (KeyValue kv : kvs) {
-				attributes.add(new Attribute(new String(kv.getRow()), new String(kv.getValue())));
+				attributes.add(new Attribute(new String(kv.getQualifier()),
+						new String(kv.getValue())));
 			}
 			table.close();
 			hbaseAdmin.close();
@@ -181,27 +186,123 @@ public class HBaseQueryHandler {
 		HTable table;
 		try {
 			table = new HTable(HBaseHandler.config, tableName);
+
+			ResultScanner scan = table.getScanner(new Scan());
+			ArrayList<Filter> filterList = new ArrayList<>();
+			for (Filter filter : filters) {
+				filterList.add(filter);
+			}
+			Result result;
+			boolean passesCheck;
+			int numberOfPassedFilters;
+			int numberOfFittingColumns;
+			List<Row> transformedResultList = new ArrayList<>();
+			List<Attribute> attributes = new ArrayList<>();
+			List<KeyValue> keyValueList;
+			passesCheck = true;
+			while ((result = scan.next()) != null) {
+				System.out.println("baar!");
+				keyValueList = new ArrayList<>();
+				for (KeyValue kv : result.raw()) {
+					keyValueList.add(kv);
+				}
+				numberOfPassedFilters = 0;
+				numberOfFittingColumns = 0;
+				Iterator<KeyValue> resultIterator = keyValueList.iterator();
+				attributes = new ArrayList<>();
+
+				while (resultIterator.hasNext()) {
+					KeyValue kv = resultIterator.next();
+					String key = new String(kv.getQualifier());
+					String value = new String(kv.getValue());
+					System.out.println(key + " " + value);
+					attributes.add(new Attribute(key, value));
+				}
+				
+				for (Attribute attr : attributes) {
+					for (Filter filter : filterList) {
+						if (attr.getName().equals(
+								filter.getAttribute().getName())) {
+							numberOfFittingColumns++;
+							if (!filter(filter, attr.getValue())) {
+								passesCheck = false;
+								// break;
+							} else {
+								numberOfPassedFilters++;
+							}
+						}
+					}
+				}
+				if (conditionalOperator.equals("OR")) {
+					if (numberOfPassedFilters == 0) {
+						passesCheck = false;
+					} else {
+						passesCheck = true;
+					}
+				} else if (conditionalOperator.equals("AND")) {
+					if (numberOfPassedFilters != filterList.size()) {
+						passesCheck = false;
+					}
+				}
+				if (numberOfFittingColumns < filterList.size()) {
+					passesCheck = false;
+				}
+				if (passesCheck) {
+					for (Attribute attr : attributes) {
+						System.out.println(attr.toString());
+					}
+					transformedResultList.add(new Row(attributes));
+				}
+			}
+
+			scan.close();
+			table.close();
+			return transformedResultList;
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		List<Row> results = new ArrayList<Row>();
-		Scan scanner =  new Scan();
-		FilterList hbaseFilters;
-		if (conditionalOperator.equals("AND")) {
-			hbaseFilters = new FilterList(Operator.MUST_PASS_ALL);	
+		return null;
+	}
+
+	private static boolean filter(Filter filter, String columnValue) {
+		if (filter.getStandardizedOperator().equals("=")) {
+			if (columnValue.compareTo(filter.getAttribute().getValue()) == 0) {
+				return true;
+			}
+		} else if (filter.getStandardizedOperator().equals("!=")) {
+			if (columnValue.compareTo(filter.getAttribute().getValue()) != 0) {
+				return true;
+			}
 		} else {
-			hbaseFilters = new FilterList(Operator.MUST_PASS_ONE);	
+			try {
+				double parsedFilterValue = Double.parseDouble(filter
+						.getAttribute().getValue());
+				double parsedColumnValue = Double.parseDouble(columnValue);
+
+				if (filter.getStandardizedOperator().equals("<")) {
+					if (parsedColumnValue < parsedFilterValue) {
+						return true;
+					}
+				} else if (filter.getStandardizedOperator().equals(">")) {
+					if (parsedColumnValue > parsedFilterValue) {
+						return true;
+					}
+				} else if (filter.getStandardizedOperator().equals("<=")) {
+					if (parsedColumnValue <= parsedFilterValue) {
+						return true;
+					}
+				} else if (filter.getStandardizedOperator().equals(">=")) {
+					if (parsedColumnValue >= parsedFilterValue) {
+						return true;
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
-		
-		for(Filter filter: filters) {
-			SingleColumnValueFilter columnFilter = new SingleColumnValueFilter();
-			// a column family has to be provided...How to solve?
-			//TODO
-			hbaseFilters.addFilter(columnFilter);
-			
-		}
-		scanner.setFilter(hbaseFilters);
-		return results;
+
+		return false;
 	}
 
 }

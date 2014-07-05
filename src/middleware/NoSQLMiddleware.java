@@ -1,12 +1,16 @@
 package middleware;
 import implementations.CassandraHandler;
 import implementations.DynamoDbHandler;
+import implementations.HBaseHandler;
 import implementations.HypertableHandler;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+
+import org.apache.hadoop.hbase.thrift.HbaseHandlerMetricsProxy;
+import org.apache.hadoop.hbase.thrift.generated.Hbase;
 
 
 public class NoSQLMiddleware {
@@ -52,6 +56,10 @@ public class NoSQLMiddleware {
 			case "DynamoDb":
 				setUsedDatabase(Implementations.DynamoDb);
 				DynamoDbHandler.connectToDatabase(databaseHost + ":" + databasePort);
+				break;
+			case "Hbase":
+				setUsedDatabase(Implementations.Hbase);
+				HBaseHandler.connect();
 				break;
 			case "Hypertable":
 				setUsedDatabase(Implementations.Hypertable);

@@ -8,12 +8,14 @@ import middleware.ComparisonOperatorMapper.ComparisonOperator;
 public class Filter {
 	private Attribute attribute;
 	private Object comparisonOperator;
+	private String standardizedOperator;
 
 	public Filter(Attribute attribute, ComparisonOperator comparisonOperator) {
 		super();
 		this.attribute = attribute;
 		
 		this.comparisonOperator = ComparisonOperatorMapper.mapConditionalOperator(comparisonOperator);
+		this.setStandardizedOperator(ComparisonOperatorMapper.mapStandardizedConditionalOperator(comparisonOperator));
 	}
 
 	public Attribute getAttribute() {
@@ -30,5 +32,13 @@ public class Filter {
 	
 	public String getComparisonOperator(){
 		return (String) comparisonOperator;
+	}
+
+	public String getStandardizedOperator() {
+		return standardizedOperator;
+	}
+
+	public void setStandardizedOperator(String standardizedOperator) {
+		this.standardizedOperator = standardizedOperator;
 	}
 }
