@@ -2,7 +2,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
-import middleware.ComparisonOperatorMapper.Operator;
+import middleware.ComparisonOperatorMapper.ComparisonOperator;
 import model.Attribute;
 import model.Filter;
 import model.Key;
@@ -75,7 +75,7 @@ public class DynamoDbTest {
 		TestHandler.createTestTables();
 		TestHandler.insertTestItems(TestHandler.TABLE_NAME);
 		
-		Filter[] filters = {new Filter(new Attribute("age", "24"), Operator.GE)};
+		Filter[] filters = {new Filter(new Attribute("age", "24"), ComparisonOperator.GE)};
 		
 		List<Row> rows = TestHandler.queryHandler.getRows(TestHandler.TABLE_NAME, "OR", filters);
 		
@@ -91,8 +91,8 @@ public class DynamoDbTest {
 		TestHandler.createTestTables();
 		TestHandler.insertTestItems(TestHandler.TABLE_NAME);
 		
-		Filter[] filters2 = {new Filter(new Attribute("age", "24"), Operator.GE),
-				new Filter(new Attribute("type", "princess"), Operator.EQ)};
+		Filter[] filters2 = {new Filter(new Attribute("age", "24"), ComparisonOperator.GE),
+				new Filter(new Attribute("type", "princess"), ComparisonOperator.EQ)};
 		
 		rows = TestHandler.queryHandler.getRows(TestHandler.TABLE_NAME, "AND", filters2);
 		

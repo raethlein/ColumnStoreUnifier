@@ -1,13 +1,13 @@
 package model;
 
 import middleware.ComparisonOperatorMapper;
-import middleware.ComparisonOperatorMapper.Operator;
+import middleware.ComparisonOperatorMapper.ComparisonOperator;
 
 public class Filter {
 	private Attribute attribute;
 	private String comparisonOperator;
 
-	public Filter(Attribute attribute, Operator comparisonOperator) {
+	public Filter(Attribute attribute, ComparisonOperator comparisonOperator) {
 		super();
 		this.attribute = attribute;
 		this.comparisonOperator = ComparisonOperatorMapper.mapConditionalOperator(comparisonOperator);

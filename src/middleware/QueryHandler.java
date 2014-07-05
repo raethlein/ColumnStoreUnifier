@@ -181,5 +181,4 @@ public void alterTableAddColumn(String tableName, String columnName) {
 
 		return null;
 	}
-
 }

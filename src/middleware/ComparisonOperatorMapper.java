@@ -6,7 +6,7 @@ import java.util.Map;
 import org.apache.hadoop.hbase.filter.CompareFilter;
 
 public class ComparisonOperatorMapper {
-	public enum Operator {
+	public enum ComparisonOperator {
 		EQ,
 		NE,
 		LT,
@@ -15,24 +15,24 @@ public class ComparisonOperatorMapper {
 		GE
 	}
 	
-	private static Map<Operator, String> wordOperators = new HashMap<>();
-	private static Map<Operator, String> charOperator = new HashMap<>();
-	private static Map<Operator, CompareFilter.CompareOp> constantOperator = new HashMap<>();
+	private static Map<ComparisonOperator, String> wordOperators = new HashMap<>();
+	private static Map<ComparisonOperator, String> charOperator = new HashMap<>();
+	private static Map<ComparisonOperator, CompareFilter.CompareOp> constantOperator = new HashMap<>();
 	
 	public static void initConditionalOperatorMapper(){
-		wordOperators.put(Operator.EQ, "EQ");
-		wordOperators.put(Operator.NE, "NE");
-		wordOperators.put(Operator.LT, "LT");
-		wordOperators.put(Operator.GT, "GT");
-		wordOperators.put(Operator.LE, "LE");
-		wordOperators.put(Operator.GE, "GE");
+		wordOperators.put(ComparisonOperator.EQ, "EQ");
+		wordOperators.put(ComparisonOperator.NE, "NE");
+		wordOperators.put(ComparisonOperator.LT, "LT");
+		wordOperators.put(ComparisonOperator.GT, "GT");
+		wordOperators.put(ComparisonOperator.LE, "LE");
+		wordOperators.put(ComparisonOperator.GE, "GE");
 		
-		charOperator.put(Operator.EQ, "=");
-		charOperator.put(Operator.NE, "!=");
-		charOperator.put(Operator.LT, "<");
-		charOperator.put(Operator.GT, ">");
-		charOperator.put(Operator.LE, "<=");
-		charOperator.put(Operator.GE, ">=");
+		charOperator.put(ComparisonOperator.EQ, "=");
+		charOperator.put(ComparisonOperator.NE, "!=");
+		charOperator.put(ComparisonOperator.LT, "<");
+		charOperator.put(ComparisonOperator.GT, ">");
+		charOperator.put(ComparisonOperator.LE, "<=");
+		charOperator.put(ComparisonOperator.GE, ">=");
 		
 //		constantOperator.put(Operator.EQ, CompareFilter.CompareOp.EQUAL);
 //		constantOperator.put(Operator.NE, CompareFilter.CompareOp.NOT_EQUAL);
@@ -43,7 +43,7 @@ public class ComparisonOperatorMapper {
 	}
 	
 	
-	public static String mapConditionalOperator(Operator operator){
+	public static String mapConditionalOperator(ComparisonOperator operator){
 		switch (NoSQLMiddleware.getUsedDatabase()) {
 		case Cassandra:
 			return wordOperators.get(operator);
