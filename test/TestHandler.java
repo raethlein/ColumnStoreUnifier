@@ -84,7 +84,9 @@ public class TestHandler {
 	}
 
 	public static void createTestTables() {
+		System.out.println("bar");
 		queryHandler.createTable(TABLE_NAME, INDEX);
+		System.out.println("bar1");
 		queryHandler.createTable(TABLE_NAME2, INDEX);
 	}
 

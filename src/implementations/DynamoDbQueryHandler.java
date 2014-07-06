@@ -77,7 +77,12 @@ public class DynamoDbQueryHandler {
 	 * @param tableName
 	 */
 	public static void deleteTable(String tableName) {
-		DynamoDbHandler.CLIENT.deleteTable(new DeleteTableRequest(tableName));
+		try {
+			DynamoDbHandler.CLIENT
+					.deleteTable(new DeleteTableRequest(tableName));
+		} catch (Exception e) {
+			//Table does not exist
+		}
 	}
 
 	/**
@@ -231,7 +236,7 @@ public class DynamoDbQueryHandler {
 					.withConditionalOperator(conditionalOperator)
 					.withScanFilter(scanFilter));
 		}
-		
+
 		ArrayList<Row> items = new ArrayList<>();
 		List<Attribute> attributes = null;
 		for (Map<String, AttributeValue> result : scanResult.getItems()) {

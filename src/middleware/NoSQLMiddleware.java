@@ -29,6 +29,7 @@ public class NoSQLMiddleware {
 				setUsedDatabase(Implementations.DynamoDb);
 				DynamoDbHandler.connectToDatabase(databaseHost + ":" + databasePort);
 				queryHandler = new DynamoDbHandler();
+				System.out.println("foo");
 				break;
 			case Hbase:
 				setUsedDatabase(Implementations.Hbase);
