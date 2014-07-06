@@ -5,8 +5,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.jruby.compiler.ir.operands.Array;
-
 import model.Attribute;
 import model.Filter;
 import model.Key;
