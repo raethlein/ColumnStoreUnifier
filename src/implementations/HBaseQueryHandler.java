@@ -214,7 +214,6 @@ public class HBaseQueryHandler {
 					KeyValue kv = resultIterator.next();
 					String key = new String(kv.getQualifier());
 					String value = new String(kv.getValue());
-					System.out.println(key + " " + value);
 					attributes.add(new Attribute(key, value));
 				}
 				
@@ -248,9 +247,6 @@ public class HBaseQueryHandler {
 				}
 
 				if (passesCheck) {
-					for (Attribute attr : attributes) {
-						System.out.println(attr.toString());
-					}
 					transformedResultList.add(new Row(attributes));
 				}
 			}

@@ -1,4 +1,5 @@
 package implementations;
+
 import interfaces.MiddlewareInterface;
 
 import java.text.SimpleDateFormat;
@@ -14,28 +15,32 @@ import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.model.ListTablesResult;
 
-
 public class DynamoDbHandler implements MiddlewareInterface {
-	static AmazonDynamoDBClient CLIENT = new AmazonDynamoDBClient(new ProfileCredentialsProvider());
-	static SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-	
-	public static void connectToDatabase(String address){
+	static AmazonDynamoDBClient CLIENT;
+	static SimpleDateFormat dateFormatter = new SimpleDateFormat(
+			"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
+	public static void connectToDatabase(String address) {
+		try{
+			CLIENT = new AmazonDynamoDBClient(new ProfileCredentialsProvider());
+		}
+		catch(Exception e){
+		}
 		CLIENT.setEndpoint(address);
 	}
-	
-	@Override
-	public void connectToDatabase(String databaseHost, String databasePort) {		
-	}
 
+	@Override
+	public void connectToDatabase(String databaseHost, String databasePort) {
+	}
 
 	@Override
 	public void alterTableAddColumn(String tableName, String columnName) {
-		//TODO
+		// TODO
 	}
 
 	@Override
 	public void createNamespace(String namespaceName) {
-		//TODO
+		// TODO
 	}
 
 	@Override
@@ -68,7 +73,8 @@ public class DynamoDbHandler implements MiddlewareInterface {
 	@Override
 	public List<Row> getRows(String tableName, String conditionalOperator,
 			Filter... filters) {
-		return DynamoDbQueryHandler.scanTable(tableName, filters, conditionalOperator);
+		return DynamoDbQueryHandler.scanTable(tableName, filters,
+				conditionalOperator);
 	}
 
 	@Override

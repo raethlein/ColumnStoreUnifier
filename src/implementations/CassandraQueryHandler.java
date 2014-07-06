@@ -169,7 +169,6 @@ public class CassandraQueryHandler {
 		}
 		query = query.substring(0, query.length() - 1);
 		query += " );";
-		System.out.println(query);
 		CassandraHandler.session.execute(query);
 	}
 

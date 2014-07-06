@@ -58,7 +58,7 @@ public class DynamoDbQueryHandler {
 		try {
 			DynamoDbHandler.CLIENT.createTable(request);
 		} catch (ResourceInUseException e) {
-			System.err.println("Table '" + tableName + "' already exists");
+			//System.err.println("Table '" + tableName + "' already exists");
 		}
 	}
 
@@ -223,7 +223,6 @@ public class DynamoDbQueryHandler {
 							.withAttributeValueList(
 									new AttributeValue().withS(filter
 											.getAttribute().getValue())));
-
 		}
 
 		ScanResult scanResult;
