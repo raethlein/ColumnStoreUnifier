@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.jruby.compiler.ir.operands.Array;
+
 import model.Attribute;
 import model.Filter;
 import model.Key;
@@ -206,6 +208,7 @@ public class CassandraQueryHandler {
 			String conditionalOperator, Filter... filters) {
 		String query;
 		ResultSet resultsFromDB;
+		List<Filter> notEqualsFilter = new ArrayList<Filter>();
 		List<Row> rows = new ArrayList<Row>();
 		if (conditionalOperator.equals("OR")) {
 			query = "SELECT * FROM " + tableName + ";";
@@ -224,19 +227,38 @@ public class CassandraQueryHandler {
 			}
 
 		} else {
+			notEqualsFilter = new ArrayList<Filter>();
 			query = "SELECT * FROM " + tableName + " WHERE ";
 			for (Filter filter : filters) {
-				query += filter.getAttribute().getName() + " "
-						+ filter.getComparisonOperator() + " '"
-						+ filter.getAttribute().getValue() + "'";
-				query += " " + conditionalOperator + " ";
+				if (filter.getComparisonOperator().equals("!=")) {
+					notEqualsFilter.add(filter);
+				} else {
+					query += filter.getAttribute().getName() + " "
+							+ filter.getComparisonOperator() + " '"
+							+ filter.getAttribute().getValue() + "'";
+					query += " " + conditionalOperator + " ";
+				}
 			}
-			query = query.substring(0,
-					query.length() - conditionalOperator.length() - 1);
-			query += " ALLOW FILTERING;";
+			if (filters.length != notEqualsFilter.size()) {
+				query = query.substring(0,
+						query.length() - conditionalOperator.length() - 1);
+				query += " ALLOW FILTERING;";
+			} else {
+				query = query.substring(0,
+						query.length() - 7);
+			}
 			System.out.println(query);
 			resultsFromDB = CassandraHandler.session.execute(query);
 			rows = resultsFromDB.all();
+			List<Row> toRemove = new ArrayList<Row>();
+			for(Filter filter: notEqualsFilter) {
+				for (Row row : rows) {
+					if (!isSelectedRow(row, filter)) {
+						toRemove.add(row);
+					}
+				}
+			}
+			rows.removeAll(toRemove);
 		}
 		List<ColumnDefinitions.Definition> columns = rows.get(0)
 				.getColumnDefinitions().asList();
@@ -255,7 +277,7 @@ public class CassandraQueryHandler {
 
 	private static boolean isSelectedRow(Row row, Filter filter) {
 		if (row.getString(filter.getAttribute().getName()) == null)
-			return false;
+			return true;
 		String columnValue = row.getString(filter.getAttribute().getName());
 		String filterValue = filter.getAttribute().getValue();
 		switch (filter.getComparisonOperator()) {
