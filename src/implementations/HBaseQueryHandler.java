@@ -199,9 +199,7 @@ public class HBaseQueryHandler {
 			List<Row> transformedResultList = new ArrayList<>();
 			List<Attribute> attributes = new ArrayList<>();
 			List<KeyValue> keyValueList;
-			passesCheck = true;
 			while ((result = scan.next()) != null) {
-				System.out.println("baar!");
 				keyValueList = new ArrayList<>();
 				for (KeyValue kv : result.raw()) {
 					keyValueList.add(kv);
@@ -210,6 +208,7 @@ public class HBaseQueryHandler {
 				numberOfFittingColumns = 0;
 				Iterator<KeyValue> resultIterator = keyValueList.iterator();
 				attributes = new ArrayList<>();
+				passesCheck = true;
 
 				while (resultIterator.hasNext()) {
 					KeyValue kv = resultIterator.next();
@@ -243,10 +242,11 @@ public class HBaseQueryHandler {
 					if (numberOfPassedFilters != filterList.size()) {
 						passesCheck = false;
 					}
+					if (numberOfFittingColumns < filterList.size()) {
+						passesCheck = false;
+					}
 				}
-				if (numberOfFittingColumns < filterList.size()) {
-					passesCheck = false;
-				}
+
 				if (passesCheck) {
 					for (Attribute attr : attributes) {
 						System.out.println(attr.toString());

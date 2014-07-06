@@ -101,7 +101,8 @@ TestHandler.printRows(rows);
 					.getValue());
 			assertEquals("age", rows.get(0).getAttributesMap().get("age")
 					.getName());
-		} else if(NoSQLMiddleware.getUsedDatabase() == Implementations.Hypertable){
+		} else if(NoSQLMiddleware.getUsedDatabase() == Implementations.Hypertable ||
+				NoSQLMiddleware.getUsedDatabase() == Implementations.Hbase){
 			assertEquals("Mario", rows.get(0).getAttributesMap().get("name")
 					.getValue());
 			assertEquals("25", rows.get(2).getAttributesMap().get("age")
