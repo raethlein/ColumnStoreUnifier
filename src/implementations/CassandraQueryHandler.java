@@ -221,30 +221,43 @@ public class CassandraQueryHandler {
 						}
 					}
 				}
-
 			}
 
 		} else {
 			notEqualsFilter = new ArrayList<Filter>();
-			query = "SELECT * FROM " + tableName + " WHERE ";
+			query = "SELECT * FROM " + tableName;
+			int numberOfEqualFilters = 0;
 			for (Filter filter : filters) {
-				if (filter.getComparisonOperator().equals("!=")) {
-					notEqualsFilter.add(filter);
-				} else {
-					query += filter.getAttribute().getName() + " "
-							+ filter.getComparisonOperator() + " '"
-							+ filter.getAttribute().getValue() + "'";
-					query += " " + conditionalOperator + " ";
+				if (filter.getComparisonOperator().equals("=")) {
+					numberOfEqualFilters++;
 				}
 			}
-			if (filters.length != notEqualsFilter.size()) {
-				query = query.substring(0,
-						query.length() - conditionalOperator.length() - 1);
-				query += " ALLOW FILTERING;";
+			if (numberOfEqualFilters == 0) {
+				for (Filter filter: filters) {
+					notEqualsFilter.add(filter);
+				}
 			} else {
-				query = query.substring(0,
-						query.length() - 7);
+				query += " WHERE ";
+				for (Filter filter : filters) {
+					if (filter.getComparisonOperator().equals("!=")) {
+						notEqualsFilter.add(filter);
+					} else {
+						query += filter.getAttribute().getName() + " "
+								+ filter.getComparisonOperator() + " '"
+								+ filter.getAttribute().getValue() + "'";
+						query += " " + conditionalOperator + " ";
+					}
+				}
+				if (filters.length != notEqualsFilter.size()) {
+					query = query.substring(0,
+							query.length() - conditionalOperator.length() - 1);
+					query += " ALLOW FILTERING;";
+				} else {
+					query = query.substring(0,
+							query.length() - 7);
+				}
 			}
+			
 			System.out.println(query);
 			resultsFromDB = CassandraHandler.session.execute(query);
 			rows = resultsFromDB.all();
