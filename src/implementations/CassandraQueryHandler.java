@@ -215,7 +215,7 @@ public class CassandraQueryHandler {
 			for (Row row : allResults) {
 				for (Filter filter : filters) {
 					if (row.getString(filter.getAttribute().getName()) != null) {
-						if (isSelectedRow(row, filter)) {
+						if (isSelectedRow(row, filter, "OR")) {
 							rows.add(row);
 							break;
 						}
@@ -262,11 +262,16 @@ public class CassandraQueryHandler {
 			resultsFromDB = CassandraHandler.session.execute(query);
 			rows = resultsFromDB.all();
 			List<Row> toRemove = new ArrayList<Row>();
-			for(Filter filter: notEqualsFilter) {
-				for (Row row : rows) {
-					if (!isSelectedRow(row, filter)) {
-						toRemove.add(row);
+			for (Row row : rows) {
+				boolean selected = true;
+				for (Filter filter : notEqualsFilter) {
+					if (!isSelectedRow(row, filter, "AND")) {
+						selected = false;
+						break;
 					}
+				}
+				if (!selected) {
+					toRemove.add(row);
 				}
 			}
 			rows.removeAll(toRemove);
@@ -286,9 +291,14 @@ public class CassandraQueryHandler {
 		return result;
 	}
 
-	private static boolean isSelectedRow(Row row, Filter filter) {
-		if (row.getString(filter.getAttribute().getName()) == null)
+	private static boolean isSelectedRow(Row row, Filter filter, String condOperator) {
+		if (row.getString(filter.getAttribute().getName()) == null && condOperator.equals("OR")) {
 			return true;
+		}
+		if (row.getString(filter.getAttribute().getName()) == null && condOperator.equals("AND")) {
+			return false;
+		}
+			
 		String columnValue = row.getString(filter.getAttribute().getName());
 		String filterValue = filter.getAttribute().getValue();
 		switch (filter.getComparisonOperator()) {
